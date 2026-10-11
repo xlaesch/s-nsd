@@ -1,151 +1,156 @@
 import { assetUrl } from "./paths";
+import { projectFrance } from "./geography";
 export type Lang = "fr" | "en";
 export type Bilingual = { fr: string; en: string };
 export const bi = (fr: string, en: string): Bilingual => ({ fr, en });
 export const anthology = bi(
-  "Sommes-nous seuls dans l’univers ?",
+  "Sommes-nous seules dans l’univers ?",
   "Are we alone in the universe?",
 );
 export const cities = [
-  { name: "Paris", x: 51, y: 30 },
-  { name: "Lyon", x: 68, y: 61 },
-  { name: "Marseille", x: 69, y: 85 },
-  { name: "Bordeaux", x: 29, y: 68 },
-  { name: "Nantes", x: 22, y: 44 },
-  { name: "Lille", x: 57, y: 13 },
-  { name: "Strasbourg", x: 86, y: 34 },
-  { name: "Toulouse", x: 43, y: 82 },
-  { name: "Rennes", x: 20, y: 34 },
-  { name: "Montpellier", x: 57, y: 82 },
-];
+  { name: "Paris", longitude: 2.3522, latitude: 48.8566 },
+  { name: "Lyon", longitude: 4.8357, latitude: 45.764 },
+  { name: "Marseille", longitude: 5.3698, latitude: 43.2965 },
+  { name: "Bordeaux", longitude: -0.5792, latitude: 44.8378 },
+  { name: "Nantes", longitude: -1.5536, latitude: 47.2184 },
+  { name: "Lille", longitude: 3.0573, latitude: 50.6292 },
+  { name: "Strasbourg", longitude: 7.7521, latitude: 48.5734 },
+  { name: "Toulouse", longitude: 1.4442, latitude: 43.6047 },
+  { name: "Rennes", longitude: -1.6778, latitude: 48.1173 },
+  { name: "Montpellier", longitude: 3.8767, latitude: 43.6119 },
+].map((city) => {
+  const position = projectFrance(city.longitude, city.latitude);
+  return { ...city, x: position.x / 4.6, y: position.y / 4.8 };
+});
 export interface Film {
   id: string;
-  number: string;
   title: Bilingual;
-  tagline: Bilingual;
+  shortSynopsis: Bilingual;
   synopsis: Bilingual;
   image: string;
-  color: string;
-  duration: number;
+  duration: string;
+  format: Bilingual;
   country: Bilingual;
-  year: number;
   director: Bilingual;
   producer: Bilingual;
 }
 export const films: Film[] = [
   {
+    id: "maestro",
+    title: bi("Maestro", "Maestro"),
+    shortSynopsis: bi(
+      "Un opéra nocturne, mené par un écureuil.",
+      "A woodland opera, conducted by a squirrel.",
+    ),
+    synopsis: bi(
+      "Au milieu d’une forêt, une troupe d’animaux sauvages se lance dans un opéra nocturne, un écureuil à la baguette.",
+      "Deep in a forest, a troupe of wild animals performs a nocturnal opera, with a squirrel conducting.",
+    ),
+    image: assetUrl("/images/films/maestro.webp"),
+    duration: "1:49",
+    format: bi("Animation 3D", "3D animation"),
+    country: bi("France", "France"),
+    director: bi("Illogic", "Illogic"),
+    producer: bi("Bloom Pictures", "Bloom Pictures"),
+  },
+  {
     id: "signal",
-    number: "01",
-    title: bi("Le dernier signal", "The last signal"),
-    tagline: bi("Une voix, quelque part.", "A voice, somewhere."),
-    synopsis: bi(
-      "Sur une planète silencieuse, une voyageuse capte une chanson qui pourrait bien changer sa trajectoire. Une rencontre imaginée entre l’infiniment grand et les toutes petites choses.",
-      "On a silent planet, a traveller picks up a song that might change her course. An imagined encounter between the infinitely large and the smallest things.",
+    title: bi("Signal", "Signal"),
+    shortSynopsis: bi(
+      "À l’écoute de l’espace, loin des autres.",
+      "Listening to space, drifting away from others.",
     ),
-    image: assetUrl("/images/moon.jpg"),
-    color: "#b9b1ec",
-    duration: 12,
+    synopsis: bi(
+      "Claudie sonde l’espace à la recherche de signes de vie extraterrestre. Absorbée par sa mission, elle perd peu à peu contact avec son entourage, jusqu’à voir la réalité lui échapper.",
+      "Claudie scans space for signs of extraterrestrial life. Absorbed in her mission, she gradually loses touch with those around her, until reality itself begins to slip away.",
+    ),
+    image: assetUrl("/images/films/signal.webp"),
+    duration: "16:44",
+    format: bi("Stop motion", "Stop motion"),
+    country: bi("France / Belgique", "France / Belgium"),
+    director: bi(
+      "Emma Carré & Mathilde Parquet",
+      "Emma Carré & Mathilde Parquet",
+    ),
+    producer: bi(
+      "Vivement Lundi ! · Lunanime · Komawé",
+      "Vivement Lundi ! · Lunanime · Komawé",
+    ),
+  },
+  {
+    id: "la-fee-des-roberts",
+    title: bi("La Fée des Roberts", "La Fée des Roberts"),
+    shortSynopsis: bi(
+      "Une lionne, une petite fille et leurs rôles à jouer.",
+      "A lioness, a little girl and the roles they play.",
+    ),
+    synopsis: bi(
+      "Qui, de la lionne qui danse ou de la petite fille que l’on dresse, tiendra le mieux son rôle ? La Fée des Roberts saura qui est réellement digne d’attention.",
+      "Who will play her part best: the dancing lioness or the little girl being trained? La Fée des Roberts knows who truly deserves attention.",
+    ),
+    image: assetUrl("/images/films/la-fee-des-roberts.webp"),
+    duration: "13:44",
+    format: bi("Animation 2D", "2D animation"),
     country: bi("France", "France"),
-    year: 2026,
-    director: bi("À confirmer", "To be confirmed"),
-    producer: bi("À confirmer", "To be confirmed"),
+    director: bi("Leahn Vivier-Chapas", "Leahn Vivier-Chapas"),
+    producer: bi("Folivari", "Folivari"),
   },
   {
-    id: "fleurs",
-    number: "02",
-    title: bi("Les fleurs du dimanche", "Sunday flowers"),
-    tagline: bi("La famille, ça se chante.", "Family comes with a soundtrack."),
-    synopsis: bi(
-      "Un déjeuner de famille se transforme en comédie musicale végétale. Les souvenirs poussent et les non-dits finissent par fleurir. Synopsis de démonstration.",
-      "A family lunch turns into a botanical musical. Memories grow and the things left unsaid finally bloom. Demonstration synopsis.",
+    id: "tuna-tartare",
+    title: bi("Tuna Tartare", "Tuna Tartare"),
+    shortSynopsis: bi(
+      "Deux laissés-pour-compte prennent le micro.",
+      "Two cast-offs find their voices.",
     ),
-    image: assetUrl("/images/flowers.jpg"),
-    color: "#ff9b71",
-    duration: 9,
-    country: bi("Belgique", "Belgium"),
-    year: 2026,
-    director: bi("À confirmer", "To be confirmed"),
-    producer: bi("À confirmer", "To be confirmed"),
+    synopsis: bi(
+      "Dans un karaoké du Los Angeles post-apocalyptique, une boîte de thon périmée et un faux sac Louis Vuitton s’encouragent à croire en leur voix artistique, même si le monde les considère comme des déchets.",
+      "In a karaoke bar in post-apocalyptic Los Angeles, an expired tin of tuna and a fake Louis Vuitton bag encourage each other to believe in their artistic voices, even if the world sees them as rubbish.",
+    ),
+    image: assetUrl("/images/films/tuna-tartare.webp"),
+    duration: "10:33",
+    format: bi("Animation 2D", "2D animation"),
+    country: bi("États-Unis", "United States"),
+    director: bi("Lena Greene", "Lena Greene"),
+    producer: bi("Autoproduction", "Self-produced"),
   },
   {
-    id: "minuit",
-    number: "03",
-    title: bi("Minuit, encore", "Midnight, again"),
-    tagline: bi(
-      "Danser jusqu’au bout du monde.",
-      "Dance to the end of the world.",
+    id: "jeanne-jean-jean",
+    title: bi("Jeanne & Jean Jean", "Jeanne & Jean Jean"),
+    shortSynopsis: bi(
+      "Une virée au magasin, un couple en question.",
+      "A furniture shop visit puts a couple to the test.",
     ),
     synopsis: bi(
-      "Le monde s’arrête, mais dans un karaoké oublié, une dernière chanson commence. Une nuit électrique et une invitation à rester ensemble. Synopsis de démonstration.",
-      "The world stops, but in a forgotten karaoke bar, one last song begins. An electric night and an invitation to stay together. Demonstration synopsis.",
+      "Un samedi après-midi, au cœur d’un magasin d’ameublement, Jeanne et Jean Jean se demandent s’ils sont vraiment faits pour vivre ensemble.",
+      "One Saturday afternoon, in a furniture shop, Jeanne and Jean Jean wonder whether they are really meant to live together.",
     ),
-    image: assetUrl("/images/disco.jpg"),
-    color: "#ed92b6",
-    duration: 14,
+    image: assetUrl("/images/films/jeanne-jean-jean.webp"),
+    duration: "7:02",
+    format: bi("Animation 2D", "2D animation"),
     country: bi("France", "France"),
-    year: 2026,
-    director: bi("À confirmer", "To be confirmed"),
-    producer: bi("À confirmer", "To be confirmed"),
+    director: bi("Thanys Martin", "Thanys Martin"),
+    producer: bi("Atelier de Sèvres", "Atelier de Sèvres"),
   },
   {
-    id: "maree",
-    number: "04",
-    title: bi("À contre-marée", "Against the tide"),
-    tagline: bi(
-      "Une mélodie sous la surface.",
-      "A melody beneath the surface.",
+    id: "2-love",
+    title: bi("2:LOVE", "2:LOVE"),
+    shortSynopsis: bi(
+      "Sur le court, la rivalité devient passion.",
+      "On court, rivalry turns into passion.",
     ),
     synopsis: bi(
-      "Un petit être marin part à la recherche du son qu’il entend chaque nuit. Une traversée douce et étrange, au rythme de l’océan. Synopsis de démonstration.",
-      "A small sea creature searches for the sound it hears every night. A gentle, strange journey to the rhythm of the ocean. Demonstration synopsis.",
+      "Lorsque deux ramasseuses de balles échangent un regard sur le court d’un prestigieux tournoi de tennis, leur rivalité se transforme peu à peu en une passion irrésistible.",
+      "When two ball girls exchange a glance on the court of a prestigious tennis tournament, their rivalry gradually turns into an irresistible passion.",
     ),
-    image: assetUrl("/images/sea.jpg"),
-    color: "#8ec9db",
-    duration: 8,
-    country: bi("Portugal", "Portugal"),
-    year: 2026,
-    director: bi("À confirmer", "To be confirmed"),
-    producer: bi("À confirmer", "To be confirmed"),
-  },
-  {
-    id: "satellite",
-    number: "05",
-    title: bi("Satellite sentimental", "Sentimental satellite"),
-    tagline: bi(
-      "L’amour à quelques années-lumière.",
-      "Love, a few light-years away.",
+    image: assetUrl("/images/films/2-love.webp"),
+    duration: "11:00",
+    format: bi("Animation 2D", "2D animation"),
+    country: bi("Belgique / Israël", "Belgium / Israel"),
+    director: bi("Ronni Shalev", "Ronni Shalev"),
+    producer: bi(
+      "OZÙ Productions · Mind The Gap Animation",
+      "OZÙ Productions · Mind The Gap Animation",
     ),
-    synopsis: bi(
-      "Deux satellites se croisent sans jamais se rencontrer. Leurs messages deviennent une chanson d’amour cosmique. Synopsis de démonstration.",
-      "Two satellites pass without ever meeting. Their messages become a cosmic love song. Demonstration synopsis.",
-    ),
-    image: assetUrl("/images/city.jpg"),
-    color: "#f0ca65",
-    duration: 11,
-    country: bi("Canada", "Canada"),
-    year: 2026,
-    director: bi("À confirmer", "To be confirmed"),
-    producer: bi("À confirmer", "To be confirmed"),
-  },
-  {
-    id: "encore",
-    number: "06",
-    title: bi("Et on recommence", "One more time"),
-    tagline: bi(
-      "Le générique n’est qu’un début.",
-      "The credits are just the beginning.",
-    ),
-    synopsis: bi(
-      "Une salle de cinéma vide se réveille après la dernière séance. Les fauteuils ont eux aussi quelque chose à raconter. Synopsis de démonstration.",
-      "An empty cinema wakes up after the last screening. Even the seats have a story to tell. Demonstration synopsis.",
-    ),
-    image: assetUrl("/images/night.jpg"),
-    color: "#a7c38e",
-    duration: 10,
-    country: bi("France", "France"),
-    year: 2026,
-    director: bi("À confirmer", "To be confirmed"),
-    producer: bi("À confirmer", "To be confirmed"),
   },
 ];
 export interface Screening {

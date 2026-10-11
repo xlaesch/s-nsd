@@ -1,4 +1,5 @@
 import { assetUrl } from "./paths";
+import { FRANCE_OUTLINE } from "./geography";
 import React, {
   createContext,
   useContext,
@@ -18,8 +19,6 @@ import {
 } from "react-router-dom";
 import {
   ArrowUpRight,
-  ArrowRight,
-  ArrowDown,
   Play,
   X,
   Menu,
@@ -29,18 +28,15 @@ import {
   Check,
   Accessibility,
   Download,
-  Music2,
   CalendarDays,
   RotateCcw,
   ExternalLink,
-  Mail,
 } from "lucide-react";
 import {
   anthology,
   bi,
   cities,
   films,
-  resources,
   seedScreenings,
   type Application,
   type Bilingual,
@@ -48,14 +44,10 @@ import {
   type Lang,
   type Screening,
 } from "./data";
-import {
-  approveApplication,
-  calculateStats,
-  STORAGE_KEY,
-  validBooking,
-} from "./demo.mjs";
+import { STORAGE_KEY, validBooking } from "./demo.mjs";
 import "./styles.css";
-import "./experimental.css";
+import "./campaign.css";
+import "./art-direction.css";
 
 type DemoState = { applications: Application[]; screenings: Screening[] };
 type AppContext = {
@@ -286,7 +278,7 @@ function Header({ changeLanguage }: { changeLanguage: (lang: Lang) => void }) {
     ["/a-propos", bi("Qui sommes-nous ?", "Who are we?")],
   ] as const;
   return (
-    <header className="header">
+    <header className={`header ${location.pathname.startsWith("/programme/") ? "header-paper" : ""}`}>
       <Link
         to="/"
         className="brand"
@@ -362,222 +354,83 @@ function Header({ changeLanguage }: { changeLanguage: (lang: Lang) => void }) {
 }
 function Home() {
   const { t, lang, trailer, state } = useApp();
-  const stats = calculateStats(state.screenings);
-  const [dimension, setDimension] = useState(false);
-  const movePoster = (event: React.PointerEvent<HTMLElement>) => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const bounds = event.currentTarget.getBoundingClientRect();
-    event.currentTarget.style.setProperty(
-      "--drift-x",
-      `${((event.clientX - bounds.left) / bounds.width - 0.5) * 22}px`,
-    );
-    event.currentTarget.style.setProperty(
-      "--drift-y",
-      `${((event.clientY - bounds.top) / bounds.height - 0.5) * 16}px`,
-    );
-  };
   return (
     <>
-      <section
-        className={`hero experimental-poster ${dimension ? "other-dimension" : ""}`}
-        onPointerMove={movePoster}
-        onPointerLeave={(event) => {
-          event.currentTarget.style.setProperty("--drift-x", "0px");
-          event.currentTarget.style.setProperty("--drift-y", "0px");
-        }}
-      >
-        <div className="poster-orbit orbit-one" aria-hidden="true" />
-        <div className="poster-orbit orbit-two" aria-hidden="true" />
-        <span className="poster-coordinate" aria-hidden="true">
-          48°51′ N / 02°21′ E — ∞
-        </span>
-        <div className="hero-topline">
-          <span>
-            {t(
+      <section className="hero campaign-hero section-pad">
+        <figure className="hero-art">
+          <img
+            src={assetUrl("/images/films/la-fee-des-roberts.webp")}
+            width="2048"
+            height="1152"
+            fetchPriority="high"
+            alt={t(
               bi(
-                "LE JOUR LE PLUS COURT SE CHANTE.",
-                "THE SHORTEST DAY HAS A SOUNDTRACK.",
+                "La Fée des Roberts : une figure rose et blanche sur une scène violette.",
+                "La Fée des Roberts: a pink and white figure on a violet stage.",
               ),
             )}
-          </span>
-          <span>
-            {t(
-              bi(
-                "UN PROGRAMME MIYU DISTRIBUTION",
-                "A MIYU DISTRIBUTION PROGRAMME",
-              ),
+          />
+          <figcaption>La Fée des Roberts · Leahn Vivier-Chapas · Folivari</figcaption>
+        </figure>
+        <div className="campaign-heading">
+          <h1>
+            {lang === "fr" ? (
+              <>
+                <span>SOMMES-NOUS</span>
+                <span>SEULES</span>
+                <span>DANS L’UNIVERS ?</span>
+              </>
+            ) : (
+              <>
+                <span>ARE WE</span>
+                <span>ALONE</span>
+                <span>IN THE UNIVERSE?</span>
+              </>
             )}
-            <ArrowDown size={14} />
-          </span>
-        </div>
-        <div className="hero-composition">
-          <div className="hero-title">
-            <h1>
-              {lang === "fr" ? (
-                <>
-                  <span>SOMMES-NOUS</span>
-                  <span className="serif-word">seuls</span>
-                  <span>
-                    DANS L’UNIVERS<span className="question-mark">?</span>
-                  </span>
-                </>
-              ) : (
-                <>
-                  <span>ARE WE</span>
-                  <span className="serif-word">alone</span>
-                  <span>
-                    IN THE UNIVERSE<span className="question-mark">?</span>
-                  </span>
-                </>
+          </h1>
+          <div className="campaign-intro">
+            <p className="release-date">
+              <span>{t(bi("Au cinéma", "In cinemas"))}</span>
+              <strong>21</strong>
+              <span>{t(bi("décembre", "December"))}</span>
+            </p>
+            <p className="anthology-line">
+              {t(
+                bi(
+                  "Six courts métrages d’animation\net de comédie musicale. Une heure de cinéma.",
+                  "Six animated musical shorts.\nOne hour of cinema.",
+                ),
               )}
-            </h1>
-            <div className="poster-footnote">
-              <span>
-                {t(
-                  bi(
-                    "six films pour chanter dans le vide",
-                    "six films to sing into the void",
-                  ),
-                )}
-              </span>
-              <svg viewBox="0 0 180 70" aria-hidden="true">
-                <path
-                  d="M4 12C80 65 142-8 167 29S80 70 48 35M128 61l44-28-10 31"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                />
-              </svg>
+            </p>
+            <div className="hero-actions">
+              <Link className="pill-button primary" to="/seances">
+                {t(bi("Trouver une séance", "Find a screening"))}
+                <ArrowUpRight size={20} />
+              </Link>
+              <button className="trailer-sticker text-link" onClick={trailer}>
+                <Play size={16} />
+                {t(bi("Bande-annonce", "Watch the trailer"))}
+              </button>
             </div>
-            <span className="poster-edition" aria-hidden="true">
-              VOL.<strong>06</strong>
-            </span>
-          </div>
-          <div className="hero-art">
-            <div className="art-frame">
-              <img
-                src={assetUrl("/images/hero.webp")}
-                alt={t(
-                  bi(
-                    "Illustration de concept : un chanteur solitaire sur une planète bleue, sous un soleil orange.",
-                    "Concept illustration: a lone singer on a blue planet beneath an orange sun.",
-                  ),
-                )}
-              />
-              <span className="art-caption">
-                {t(bi("QUELQUE PART, ENSEMBLE.", "SOMEWHERE, TOGETHER."))}
-              </span>
-            </div>
-            <span className="portal-ring" aria-hidden="true">
-              LE CINÉMA NOUS RAPPROCHE / CINEMA BRINGS US CLOSER /
-            </span>
-            <Star className="hero-star" />
-            <button className="trailer-sticker" onClick={trailer}>
-              <Play size={22} fill="currentColor" />
-              <span>
-                {t(bi("BANDE-", "WATCH THE"))}
-                <br />
-                {t(bi("ANNONCE", "TRAILER"))}
-              </span>
-              <ArrowUpRight size={19} />
-            </button>
-            <button
-              className="dimension-switch"
-              onClick={() => setDimension(!dimension)}
-              aria-pressed={dimension}
-            >
-              <Eye />
-              <span>{t(bi("changer de dimension", "switch dimensions"))}</span>
-            </button>
-            <span className="orbit-note">
-              {t(bi("à voir sur grand écran", "made for the big screen"))} ↗
-            </span>
-          </div>
-        </div>
-        <div className="hero-bottom">
-          <div className="hero-description">
-            <span className="hero-count">
-              06<span>✳</span>
-            </span>
-            <p>
-              {t(
-                bi(
-                  "Six courts métrages. Six chansons.\nZéro bonne raison de ne pas y aller.",
-                  "Six short films. Six songs.\nEvery reason to be there.",
-                ),
-              )}
-            </p>
-          </div>
-          <Link className="pill-button dark" to="/seances">
-            {t(bi("Trouver ma séance", "Find my screening"))}
-            <ArrowUpRight size={23} />
-          </Link>
-        </div>
-        <div className="hero-bottomline">
-          <DemoNote />
-          <a href="#decouvrir" className="scroll-cue">
-            {t(bi("ON VOUS EMMÈNE ?", "SHALL WE?"))}
-            <ArrowDown size={16} />
-          </a>
-        </div>
-      </section>
-      <Marquee />
-      <section id="decouvrir" className="intro section-pad">
-        <Label>
-          {t(bi("LE CINÉMA, ÇA SE PARTAGE", "CINEMA IS BETTER TOGETHER"))}
-        </Label>
-        <div className="intro-grid">
-          <h2>
-            {t(
-              bi(
-                "On n’est jamais\nvraiment seuls.",
-                "We’re never\nreally alone.",
-              ),
-            )}
-            <Eye className="intro-eye" />
-          </h2>
-          <div>
-            <p className="large-copy">
-              {t(
-                bi(
-                  "Depuis l’espace, le futur ou un karaoké post-apocalyptique, six films d’animation vous invitent à finir l’année en chanson.",
-                  "From outer space, the future, or a post-apocalyptic karaoke bar, six animated shorts invite you to end the year with a song.",
-                ),
-              )}
-            </p>
-            <p>
-              {t(
-                bi(
-                  "Pour survivre aux fêtes, au froid, aux films de famille et à la famille elle-même. Miyu Distribution vous promet au moins ça : sortir de là avec une chanson en tête.",
-                  "To survive the holidays, the cold, the home movies, and the family itself. Miyu Distribution promises you this much: you’ll leave with a song stuck in your head.",
-                ),
-              )}
-            </p>
-            <TextLink to="/programme">
-              {t(bi("Découvrir le programme", "Discover the programme"))}
-            </TextLink>
           </div>
         </div>
       </section>
       <section className="film-preview section-pad">
         <div className="section-heading">
           <div>
-            <Label>
-              {t(
-                bi("SIX FILMS, UN MÊME ÉLAN", "SIX FILMS, ONE SHARED FEELING"),
-              )}
-            </Label>
-            <h2>
+            <p className="section-overline">{t(bi("Une anthologie en six voix", "An anthology in six voices"))}</p>
+            <h2>{t(bi("Le programme", "The programme"))}</h2>
+            <p>
               {t(
                 bi(
-                  "Chacun son\npetit vertige.",
-                  "A little dizzy.\nA little different.",
+                  "Depuis l’espace, le futur ou un karaoké post-apocalyptique, six films pour finir l’année en chanson.",
+                  "From outer space, the future or a post-apocalyptic karaoke bar, six films to end the year with a song.",
                 ),
               )}
-            </h2>
+            </p>
           </div>
           <TextLink to="/programme">
-            {t(bi("Les 6 courts métrages", "All 6 short films"))}
+            {t(bi("Tous les films", "All films"))}
           </TextLink>
         </div>
         <div className="film-grid">
@@ -585,171 +438,79 @@ function Home() {
             <FilmCard key={film.id} film={film} />
           ))}
         </div>
-        <DemoNote>
-          {t(
-            bi(
-              "Sélection fictive et images de concept. Les six films seront annoncés prochainement.",
-              "Fictional selection and concept images. The six films will be announced soon.",
-            ),
-          )}
-        </DemoNote>
       </section>
       <section className="home-screenings">
         <div className="screenings-pitch section-pad">
-          <Label>{t(bi("ON SE RETROUVE OÙ ?", "WHERE SHALL WE MEET?"))}</Label>
-          <h2>
-            {t(
-              bi(
-                "Quelque part\nprès de\nchez vous.",
-                "Somewhere\nclose to\nyou.",
-              ),
-            )}
-          </h2>
+          <h2>{t(bi("Près de\nchez vous", "Close to\nhome"))}</h2>
           <p>
             {t(
               bi(
-                "Une salle, un grand écran, des gens.\nIl ne manque plus que vous.",
-                "A cinema, a big screen, a few people.\nAll that’s missing is you.",
+                "Choisissez votre ville et retrouvez les séances sur la carte.",
+                "Choose your city and find screenings on the map.",
               ),
             )}
           </p>
-          <Link className="pill-button dark" to="/seances">
-            {t(bi("Voir toutes les séances", "See all screenings"))}
-            <ArrowUpRight size={21} />
+          <Link className="pill-button primary" to="/seances">
+            {t(bi("Voir les séances", "Find screenings"))}
+            <ArrowUpRight size={20} />
           </Link>
+          <DemoNote>
+            {t(bi("Séances de démonstration", "Demonstration screenings"))}
+          </DemoNote>
         </div>
-        <div className="home-map">
+        <Link
+          to="/seances"
+          className="home-map"
+          aria-label={t(
+            bi("Explorer la carte des séances", "Explore the screening map"),
+          )}
+        >
           <FranceMap
             screenings={state.screenings}
             selected={null}
             onSelect={() => {}}
             preview
           />
-          <div className="map-callout">
-            <span className="live-dot" />
-            {stats.cities}{" "}
-            {t(bi("villes, et ça continue", "cities, and counting"))}
-            <ArrowUpRight size={18} />
-          </div>
-        </div>
+        </Link>
       </section>
-      <section className="stats-section section-pad">
-        <Label>
-          {t(bi("LA TOURNÉE EN QUELQUES CHIFFRES", "THE TOUR, IN NUMBERS"))}
-        </Label>
-        <div className="stats-grid">
-          {[
-            [stats.screenings, bi("séances", "screenings")],
-            [stats.partners, bi("complices", "partners")],
-            [stats.cities, bi("villes", "cities")],
-            [stats.karaoke, bi("karaokés mal chantés*", "bad karaoke songs*")],
-            [stats.cocktails, bi("cocktails cosmiques*", "cosmic cocktails*")],
-          ].map(([n, label], i) => (
-            <div className="stat" key={i}>
-              <span>{String(n).padStart(2, "0")}</span>
-              <p>{t(label as Bilingual)}</p>
-            </div>
-          ))}
-        </div>
-        <div className="stats-foot">
-          <span>
-            {t(
-              bi(
-                "* Estimations hautement fantaisistes. Tous les chiffres de ce prototype sont des exemples.",
-                "* Highly imaginative estimates. All prototype numbers are examples.",
-              ),
-            )}
-          </span>
-          <Link to="/organiser">
-            {t(
-              bi("Et si on ajoutait votre ville ?", "Shall we add your city?"),
-            )}
-            <ArrowUpRight size={17} />
-          </Link>
-        </div>
-      </section>
-      <section className="host-banner section-pad">
-        <Star />
-        <div>
-          <Label>{t(bi("À VOUS DE JOUER", "YOUR TURN"))}</Label>
-          <h2>
-            {t(bi("Faites vibrer\nvotre salle.", "Make your\ncinema sing."))}
-          </h2>
-        </div>
-        <div>
-          <p>
-            {t(
-              bi(
-                "Cinéma, association, lieu culturel…\nEt si la prochaine séance, c’était chez vous ?",
-                "Cinema, association, cultural space…\nWhat if the next screening was yours?",
-              ),
-            )}
-          </p>
-          <Link className="pill-button dark" to="/organiser">
-            {t(bi("J’organise une séance", "Host a screening"))}
-            <ArrowUpRight size={21} />
-          </Link>
-        </div>
-      </section>
+      <SmallCTA host />
     </>
   );
 }
-function Marquee() {
-  const { t } = useApp();
-  const text = t(bi("SIX FILMS", "SIX FILMS"));
-  return (
-    <div className="marquee" aria-hidden="true">
-      <div className="marquee-track">
-        {Array.from({ length: 6 }, (_, i) => (
-          <span key={i}>
-            {text}
-            <Star />
-            {t(bi("SIX CHANSONS", "SIX SONGS"))}
-            <Star />
-            {t(bi("UN UNIVERS", "ONE UNIVERSE"))}
-            <Star />
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-}
+
 function FilmCard({ film }: { film: Film }) {
   const { t } = useApp();
   return (
     <Link to={"/programme/" + film.id} className="film-card">
-      <div className="film-image" style={{ backgroundColor: "var(--paper)" }}>
+      <span className="film-index" aria-hidden="true">{String(films.findIndex((item) => item.id === film.id) + 1).padStart(2, "0")}</span>
+      <div className="film-image">
         <img
           src={film.image}
           alt={t(
-            bi(
-              "Image de concept, sélection provisoire",
-              "Concept image, provisional selection",
-            ),
+            bi(`Image du film ${film.title.fr}`, `Still from ${film.title.en}`),
           )}
           loading="lazy"
         />
-        <span className="film-number">{film.number}</span>
-        <span className="film-arrow">
-          <ArrowUpRight />
-        </span>
-        <span className="film-runtime">{film.duration} MIN</span>
       </div>
       <div className="film-card-title">
         <h3>{t(film.title)}</h3>
         <ArrowUpRight size={20} />
       </div>
-      <p>{t(film.tagline)}</p>
+      <p className="film-director">
+        {t(film.director)} <span>· {film.duration.replace(":", "′")}″</span>
+      </p>
+      <p className="film-synopsis">{t(film.shortSynopsis)}</p>
+      <p className="film-production">{t(film.producer)}</p>
     </Link>
   );
 }
+
 function PageTitle({
-  label,
   title,
   description,
   color = "lime",
 }: {
-  label: Bilingual;
+  label?: Bilingual;
   title: Bilingual;
   description?: Bilingual;
   color?: string;
@@ -757,51 +518,33 @@ function PageTitle({
   const { t } = useApp();
   return (
     <section className={`page-title ${color} section-pad`}>
-      <Label>{t(label)}</Label>
-      <div>
-        <h1>{t(title)}</h1>
-        <Star />
-      </div>
-      {description && <p className="large-copy">{t(description)}</p>}
+      <h1>{t(title)}</h1>
+      {description && <p>{t(description)}</p>}
     </section>
   );
 }
+
 function Programme() {
   const { t } = useApp();
   return (
     <>
       <PageTitle
-        label={bi("LE PROGRAMME", "THE PROGRAMME")}
-        title={bi(
-          "Six petits films.\nUne grande échappée.",
-          "Six little films.\nOne great escape.",
-        )}
+        title={bi("Le programme", "The programme")}
         description={bi(
-          "Des voix, des mondes, et des chansons qui restent.",
-          "Voices, worlds, and songs that stay with you.",
+          "Six courts métrages d’animation et de comédie musicale. Au cinéma le 21 décembre.",
+          "Six animated musical shorts. In cinemas on 21 December.",
         )}
       />
       <section className="section-pad programme-content">
         <div className="programme-meta">
           <span>
-            6 {t(bi("COURTS MÉTRAGES D’ANIMATION", "ANIMATED SHORT FILMS"))}
+            {t(bi("Durée du programme : 1 h", "Programme runtime: 1 hour"))}
           </span>
-          <span>
-            {t(bi("SÉLECTION À CONFIRMER", "SELECTION TO BE CONFIRMED"))}
-          </span>
-          <span>FR / EN</span>
+          <span>Miyu Distribution · Vivement Lundi !</span>
         </div>
-        <DemoNote>
-          {t(
-            bi(
-              "Les titres, crédits, durées et pays ci-dessous sont des exemples de mise en page.",
-              "The titles, credits, runtimes and countries below are layout examples.",
-            ),
-          )}
-        </DemoNote>
         <div className="film-grid programme-grid">
-          {films.map((f) => (
-            <FilmCard film={f} key={f.id} />
+          {films.map((film) => (
+            <FilmCard key={film.id} film={film} />
           ))}
         </div>
       </section>
@@ -809,93 +552,68 @@ function Programme() {
     </>
   );
 }
+
 function FilmDetail() {
   const { id } = useParams();
-  const film = films.find((f) => f.id === id);
+  const aliases: Record<string, string> = {
+    fleurs: "la-fee-des-roberts",
+    minuit: "tuna-tartare",
+    maree: "jeanne-jean-jean",
+    satellite: "2-love",
+    encore: "maestro",
+  };
+  const film = films.find((film) => film.id === (aliases[id || ""] || id));
   const { t } = useApp();
   if (!film) return <NotFound />;
   return (
     <>
-      <section
-        className="film-detail section-pad"
-        style={{ backgroundColor: "var(--paper)" }}
-      >
+      <section className="film-detail section-pad">
         <TextLink to="/programme">
           {t(bi("Retour au programme", "Back to the programme"))}
         </TextLink>
-        <div className="detail-title">
-          <span>{film.number}/06</span>
-          <h1>{t(film.title)}</h1>
-        </div>
-        <div className="detail-grid">
-          <img
-            className="detail-image"
-            src={film.image}
-            alt={t(
-              bi(
-                "Photographie de concept, pas une image du film",
-                "Concept photograph, not a film still",
-              ),
-            )}
-          />
-          <div>
-            <Label>{t(bi("SYNOPSIS", "SYNOPSIS"))}</Label>
-            <p className="large-copy">{t(film.synopsis)}</p>
-            <dl>
-              {[
-                [bi("Réalisation", "Director"), film.director],
-                [bi("Production", "Producer"), film.producer],
-                [
-                  bi("Pays / Année", "Country / Year"),
-                  bi(
-                    `${film.country.fr} / ${film.year}`,
-                    `${film.country.en} / ${film.year}`,
-                  ),
-                ],
-                [
-                  bi("Durée", "Runtime"),
-                  bi(`${film.duration} minutes`, `${film.duration} minutes`),
-                ],
-                [
-                  bi("Dialogues / Sous-titres", "Dialogue / Subtitles"),
-                  bi("À confirmer", "To be confirmed"),
-                ],
-                [bi("Format", "Format"), bi("À confirmer", "To be confirmed")],
-                [
-                  bi("Distribution", "Distribution"),
-                  bi("Miyu Distribution", "Miyu Distribution"),
-                ],
-              ].map(([key, val]) => (
-                <div key={key.fr}>
-                  <dt>{t(key)}</dt>
-                  <dd>{t(val)}</dd>
-                </div>
-              ))}
-            </dl>
-            <div className="availability">
-              <Play size={18} />
-              {t(
-                bi(
-                  "Bande-annonce individuelle à venir",
-                  "Individual trailer coming soon",
-                ),
-              )}
-            </div>
-          </div>
-        </div>
-        <DemoNote>
-          {t(
-            bi(
-              "Fiche fictive pour présenter le format. Visuel de concept.",
-              "Fictional entry to demonstrate the format. Concept image.",
-            ),
+        <h1>{t(film.title)}</h1>
+        <img
+          className="detail-image"
+          src={film.image}
+          alt={t(
+            bi(`Image du film ${film.title.fr}`, `Still from ${film.title.en}`),
           )}
-        </DemoNote>
+        />
+        <div className="detail-grid">
+          <div>
+            <h2>{t(bi("Synopsis", "Synopsis"))}</h2>
+            <p className="large-copy">{t(film.synopsis)}</p>
+          </div>
+          <dl>
+            {[
+              [bi("Réalisation", "Director"), film.director],
+              [bi("Production", "Production"), film.producer],
+              [
+                bi("Durée", "Runtime"),
+                bi(
+                  film.duration.replace(":", " min ") + " s",
+                  film.duration.replace(":", " min ") + " sec",
+                ),
+              ],
+              [bi("Technique", "Technique"), film.format],
+              [bi("Pays de production", "Production countries"), film.country],
+            ].map(([key, value]) => (
+              <div key={key.fr}>
+                <dt>{t(key)}</dt>
+                <dd>{t(value)}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
       </section>
       <section className="section-pad next-film">
-        <span>{t(bi("ET ENSUITE ?", "WHAT’S NEXT?"))}</span>
-        <TextLink to={"/programme/" + films[(films.indexOf(film) + 1) % 6].id}>
-          {t(films[(films.indexOf(film) + 1) % 6].title)}
+        <TextLink
+          to={
+            "/programme/" + films[(films.indexOf(film) + 1) % films.length].id
+          }
+        >
+          {t(bi("Film suivant : ", "Next film: "))}
+          {t(films[(films.indexOf(film) + 1) % films.length].title)}
         </TextLink>
       </section>
       <SmallCTA />
@@ -919,6 +637,13 @@ function FranceMap({
   const grouped = screenings.filter(
     (s, i, all) => all.findIndex((a) => a.city === s.city) === i,
   );
+  // Resolve known cities afresh so persisted demo screenings use corrected geography.
+  const position = (screening: Screening) => {
+    const city = cities.find((city) => city.name === screening.city);
+    return city
+      ? { x: city.x * 4.6, y: city.y * 4.8 }
+      : { x: 45 + screening.x * 3.45, y: 35 + screening.y * 4 };
+  };
   return (
     <div className={`france-map ${preview ? "preview-map" : ""}`}>
       <svg
@@ -947,22 +672,11 @@ function FranceMap({
           fill={`url(#${preview ? "dots-preview" : "dots"})`}
         />
         <g transform={`translate(230 240) scale(${zoom}) translate(-230 -240)`}>
-          <path
-            className="france-shape"
-            d="M209 46 238 52 257 31 276 54 285 82 326 99 333 119 377 127 386 160 364 186 374 220 352 245 368 282 347 305 345 337 322 355 321 386 294 390 270 370 244 385 218 369 193 390 156 377 145 355 121 349 127 313 137 289 134 259 119 236 98 229 99 210 74 203 69 187 33 180 24 163 51 152 42 137 76 141 103 151 128 142 143 119 139 101 161 111 177 93 179 70 203 77Z"
-          />
-          <path
-            className="corsica-shape"
-            d="m380 387 10-15 5 19-7 39-12 9-1-23Z"
-          />
-          <path
-            className="map-lines"
-            d="M143 119 209 190 137 289M209 190 285 82M209 190 279 252 368 282M279 252 270 370M127 313 279 252"
-          />
+          <path className="france-shape" d={FRANCE_OUTLINE} />
           {grouped.map((s) => (
             <g
               key={s.city}
-              transform={`translate(${45 + s.x * 3.45} ${35 + s.y * 4})`}
+              transform={`translate(${position(s).x} ${position(s).y})`}
             >
               <circle
                 r={preview ? 6 : 8}
@@ -973,7 +687,11 @@ function FranceMap({
                     : "map-point"
                 }
               />
-              <text y="-15" textAnchor="middle" className="map-city">
+              <text
+                y={s.city === "Lille" ? 20 : -15}
+                textAnchor="middle"
+                className="map-city"
+              >
                 {s.city}
               </text>
             </g>
@@ -1002,8 +720,8 @@ function FranceMap({
             {grouped.map((s) => (
               <button
                 style={{
-                  left: `${((45 + s.x * 3.45) / 460) * 100}%`,
-                  top: `${((35 + s.y * 4) / 480) * 100}%`,
+                  left: `${(position(s).x / 460) * 100}%`,
+                  top: `${(position(s).y / 480) * 100}%`,
                 }}
                 key={s.city}
                 className="map-hit"
@@ -1023,9 +741,6 @@ function FranceMap({
           </div>
         </>
       )}
-      <span className="map-sea">
-        {t(bi("OCÉAN ATLANTIQUE", "ATLANTIC OCEAN"))}
-      </span>
     </div>
   );
 }
@@ -1060,10 +775,7 @@ function Screenings() {
     <>
       <PageTitle
         label={bi("OÙ VOIR LE PROGRAMME", "WHERE TO WATCH")}
-        title={bi(
-          "Le grand écran.\nPas si loin.",
-          "The big screen.\nCloser than you think.",
-        )}
+        title={bi("Trouver une séance", "Find a screening")}
         description={bi(
           "Trouvez votre ville. Choisissez votre séance. On s’y retrouve.",
           "Find your city. Pick your screening. See you there.",
@@ -1262,105 +974,74 @@ function Press() {
   return (
     <>
       <PageTitle
-        label={bi("LA REVUE DE PRESSE", "PRESS REVIEW")}
-        title={bi("Ça fait\nun peu de bruit.", "Making\na little noise.")}
+        title={bi("Presse", "Press")}
         description={bi(
-          "Les mots des autres, autour de nos images.",
-          "Other people’s words, around our images.",
+          "Les visuels du programme et le contact de l’équipe.",
+          "Programme artwork and the team’s contact details.",
         )}
-        color="pink"
       />
       <section className="section-pad press-content">
-        <div className="press-intro">
-          <h2>
-            {t(
-              bi(
-                "À lire, à écouter,\nà partager.",
-                "Read, listen,\npass it on.",
-              ),
-            )}
-          </h2>
+        <div className="press-assets">
+          <a
+            href={assetUrl("/images/programme-poster.webp")}
+            download="sommes-nous-seules-affiche.webp"
+            className="poster-download"
+          >
+            <img
+              src={assetUrl("/images/programme-poster.webp")}
+              width="1448"
+              height="2048"
+              alt={t(
+                bi(
+                  "Affiche du programme : un personnage rose sur fond corail.",
+                  "Programme poster: a pink character on a coral background.",
+                ),
+              )}
+            />
+            <span>
+              {t(bi("Télécharger l’affiche", "Download the poster"))}
+              <Download size={18} />
+            </span>
+          </a>
           <div>
-            <p className="large-copy">
+            <h2>{t(bi("Parlons du programme", "About the programme"))}</h2>
+            <p>
               {t(
                 bi(
-                  "Les premiers articles arriveront ici. Presse papier, entretiens et découvertes en ligne : toutes les voix ont leur place.",
-                  "The first articles will appear here. Print coverage, interviews and online discoveries: every voice has a place.",
+                  "Pour un dossier de presse, une interview ou des visuels supplémentaires, contactez Miyu Distribution.",
+                  "For a press kit, an interview or additional artwork, contact Miyu Distribution.",
                 ),
               )}
             </p>
-            <DemoNote>
-              {t(
-                bi(
-                  "Aucune couverture de presse publiée pour le moment.",
-                  "No press coverage published yet.",
-                ),
-              )}
-            </DemoNote>
+            <a className="text-link" href="mailto:stagiaire.diffusion@miyu.fr">
+              stagiaire.diffusion@miyu.fr
+              <ArrowUpRight size={18} />
+            </a>
           </div>
-        </div>
-        {[
-          bi("Articles & entretiens", "Articles & interviews"),
-          bi("Dans la presse papier", "In print"),
-          bi("Revue de presse complète", "Complete press review"),
-        ].map((label, i) => (
-          <div className="press-row" key={i}>
-            <span>0{i + 1}</span>
-            <h3>{t(label)}</h3>
-            <span>{t(bi("À VENIR", "COMING SOON"))}</span>
-            {i === 2 ? <Download /> : <ArrowUpRight />}
-          </div>
-        ))}
-        <div className="press-contact">
-          <p>
-            {t(
-              bi(
-                "Vous souhaitez parler du programme ?",
-                "Want to cover the programme?",
-              ),
-            )}
-          </p>
-          <TextLink to="/contact">
-            {t(
-              bi(
-                "Contacter les relations presse",
-                "Get in touch with the press team",
-              ),
-            )}
-          </TextLink>
         </div>
       </section>
     </>
   );
 }
+
 function About() {
   const { t } = useApp();
   return (
     <>
-      <PageTitle
-        label={bi("QUI SOMMES-NOUS ?", "WHO ARE WE?")}
-        title={bi(
-          "Des images.\nEt des gens derrière.",
-          "Images.\nAnd the people behind them.",
-        )}
-        color="blue"
-      />
+      <PageTitle title={bi("Miyu Distribution", "Miyu Distribution")} />
       <section className="section-pad about-grid">
-        <div className="about-visual">
-          <Eye />
-          <span>miyu</span>
-          <Star />
-        </div>
+        <img
+          className="about-visual"
+          src={assetUrl("/images/films/signal.webp")}
+          alt={t(
+            bi(
+              "Image de Signal, un film en stop motion.",
+              "Still from Signal, a stop-motion film.",
+            ),
+          )}
+        />
         <div>
-          <Label>MIYU DISTRIBUTION</Label>
-          <h2>
-            {t(
-              bi(
-                "Le cinéma d’animation,\nsans frontières.",
-                "Animation,\nwithout borders.",
-              ),
-            )}
-          </h2>
+          <h2>{t(bi("Le cinéma d’animation", "Animated cinema"))}</h2>
           <p className="large-copy">
             {t(
               bi(
@@ -1372,111 +1053,8 @@ function About() {
           <p>
             {t(
               bi(
-                "Courts métrages indépendants, films de fin d’études et longs métrages : nous accompagnons les films pour qu’ils rencontrent leurs publics, partout dans le monde.",
-                "Independent shorts, graduation films and features: we help films find their audiences around the world.",
-              ),
-            )}
-          </p>
-          <a
-            className="text-link"
-            href="https://www.miyu.fr/distribution/"
-            target="_blank"
-            rel="noreferrer"
-          >
-            {t(bi("Explorer Miyu Distribution", "Explore Miyu Distribution"))}
-            <ArrowUpRight size={21} />
-          </a>
-          <p className="availability">
-            {t(
-              bi(
-                "Liens vers nos chaînes et partenaires à confirmer.",
-                "Channel and partner links to be confirmed.",
-              ),
-            )}
-          </p>
-        </div>
-      </section>
-      <section className="playlist-section section-pad">
-        <Music2 size={46} />
-        <h2>
-          {t(
-            bi(
-              "Vous avez\nl’oreille cosmique ?",
-              "Got a cosmic\near for music?",
-            ),
-          )}
-        </h2>
-        <div>
-          <p>
-            {t(
-              bi(
-                "Une petite porte vers les chansons de l’espace. La playlist officielle arrivera plus tard.",
-                "A little doorway to songs from space. The official playlist will follow.",
-              ),
-            )}
-          </p>
-          <a
-            href="https://open.spotify.com/search/space%20songs"
-            target="_blank"
-            rel="noreferrer"
-            className="text-link"
-          >
-            {t(bi("Explorer les chansons cosmiques", "Explore cosmic songs"))}
-            <ArrowUpRight />
-          </a>
-        </div>
-      </section>
-    </>
-  );
-}
-function Contact() {
-  const { t } = useApp();
-  return (
-    <>
-      <PageTitle
-        label={bi("CONTACTS", "CONTACT")}
-        title={bi("On se parle ?", "Let’s talk?")}
-        description={bi(
-          "Une question, une idée, une envie de projection.",
-          "A question, an idea, a screening in mind.",
-        )}
-        color="pink"
-      />
-      <section className="section-pad contacts-grid">
-        {[
-          [
-            bi("Distribution", "Distribution"),
-            bi("Miyu Distribution", "Miyu Distribution"),
-          ],
-          [
-            bi("Programmation", "Programming"),
-            bi("L’équipe du programme", "The programme team"),
-          ],
-          [
-            bi("Relations presse", "Press relations"),
-            bi("Le contact presse", "The press contact"),
-          ],
-        ].map(([title, name]) => (
-          <div className="contact-block" key={title.fr}>
-            <Mail size={28} />
-            <h2>{t(title)}</h2>
-            <p>{t(name)}</p>
-            <span className="availability">
-              {t(
-                bi(
-                  "Nom, email et téléphone à confirmer",
-                  "Name, email and phone to be confirmed",
-                ),
-              )}
-            </span>
-          </div>
-        ))}
-        <div className="contact-bottom">
-          <p>
-            {t(
-              bi(
-                "En attendant les coordonnées définitives, retrouvez Miyu sur son site officiel.",
-                "Until final contact details are available, visit Miyu’s official website.",
+                "Sommes-nous seules dans l’univers ? réunit six courts métrages de comédie musicale, en partenariat avec Vivement Lundi ! et son film Signal.",
+                "Are we alone in the universe? brings together six animated musical shorts, in partnership with Vivement Lundi ! and its film Signal.",
               ),
             )}
           </p>
@@ -1487,49 +1065,69 @@ function Contact() {
             rel="noreferrer"
           >
             miyu.fr
-            <ArrowUpRight />
+            <ArrowUpRight size={18} />
           </a>
         </div>
+      </section>
+      <SmallCTA host />
+    </>
+  );
+}
+
+function Contact() {
+  const { t } = useApp();
+  return (
+    <>
+      <PageTitle
+        title={bi("Contact", "Contact")}
+        description={bi(
+          "Une question sur le programme ou une envie de projection ?",
+          "A question about the programme or a screening in mind?",
+        )}
+      />
+      <section className="section-pad contact-content">
+        <h2>Miyu Distribution</h2>
+        <a className="contact-email" href="mailto:stagiaire.diffusion@miyu.fr">
+          stagiaire.diffusion@miyu.fr
+          <ArrowUpRight size={22} />
+        </a>
+        <TextLink to="/organiser">
+          {t(bi("Organiser une séance", "Host a screening"))}
+        </TextLink>
       </section>
     </>
   );
 }
 
+const ORGANISER_EMAIL = "stagiaire.diffusion@miyu.fr";
 function Organise() {
-  const { t, state, update, storageError } = useApp();
-  const [tab, setTab] = useState<"apply" | "review" | "resources">("apply");
-  const [notice, setNotice] = useState("");
+  const { t } = useApp();
+  const [submitting, setSubmitting] = useState(false);
+  const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
-  const [resourceNotice, setResourceNotice] = useState("");
-  const [form, setForm] = useState({
-    organisation: "",
-    name: "",
-    email: "",
-    venue: "",
-    city: "Paris",
-    date: "",
-    time: "20:00",
-    accessibility: "unknown",
-    booking: "",
-  });
-  const approved = state.applications.some((a) => a.status === "approved");
-  const field = (key: keyof typeof form, value: string) =>
-    setForm({ ...form, [key]: value });
-  const submit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError("");
-    if (!validBooking(form.booking)) {
+  const submit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (submitting) return;
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    if (data.get("_honey")) return;
+    const booking = String(data.get("Billetterie") || "").trim();
+    if (!validBooking(booking)) {
       setError(
         t(
           bi(
-            "Le lien doit commencer par https:// ou http://.",
-            "The link must begin with https:// or http://.",
+            "Le lien de billetterie doit commencer par https:// ou http://.",
+            "The booking link must start with https:// or http://.",
           ),
         ),
       );
       return;
     }
-    if (!form.organisation.trim() || !form.name.trim() || !form.venue.trim()) {
+    if (
+      ["Organisation", "name", "Lieu", "Ville"].some(
+        (key) => !String(data.get(key) || "").trim(),
+      )
+    ) {
       setError(
         t(
           bi(
@@ -1540,519 +1138,264 @@ function Organise() {
       );
       return;
     }
-    const location = cities.find((c) => c.name === form.city)!;
-    const app: Application = {
-      ...form,
-      organisation: form.organisation.trim(),
-      venue: form.venue.trim(),
-      name: form.name.trim(),
-      id: crypto.randomUUID(),
-      x: location.x,
-      y: location.y,
-      status: "pending",
-    };
-    update({ ...state, applications: [...state.applications, app] });
-    setNotice(
-      t(
-        bi(
-          "Votre demande de démonstration est prête. Ouvrez « Validation démo » pour l’approuver. Aucun email n’a été envoyé.",
-          "Your demo application is ready. Open “Demo review” to approve it. No email has been sent.",
+    setSubmitting(true);
+    setError("");
+    const payload = Object.fromEntries(
+      [...data.entries()].map(([key, value]) => [key, String(value).trim()]),
+    );
+    payload._subject = `Demande de projection — ${payload.Organisation} — ${payload.Ville}`;
+    payload._replyto = payload.email;
+    try {
+      const response = await fetch(
+        `https://formsubmit.co/ajax/${ORGANISER_EMAIL}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify(payload),
+          signal: AbortSignal.timeout(20000),
+        },
+      );
+      const result = await response.json();
+      if (
+        !response.ok ||
+        !(result.success === true || result.success === "true")
+      )
+        throw new Error("Submission was not confirmed");
+      setSent(true);
+      form.reset();
+    } catch {
+      setError(
+        t(
+          bi(
+            "L’envoi n’a pas pu être confirmé. Vos informations sont conservées dans le formulaire. Vous pouvez aussi écrire à stagiaire.diffusion@miyu.fr.",
+            "We could not confirm your submission. Your details are still in the form. You can also email stagiaire.diffusion@miyu.fr.",
+          ),
         ),
-      ),
-    );
-    setForm({
-      ...form,
-      organisation: "",
-      name: "",
-      email: "",
-      venue: "",
-      booking: "",
-    });
-  };
-  const approve = (id: string) => {
-    update(
-      approveApplication(state.applications, state.screenings, id) as DemoState,
-    );
-    setNotice(
-      t(
-        bi(
-          "Séance ajoutée à la carte ! Les compteurs ont été mis à jour et le kit démo est débloqué.",
-          "Screening added to the map! Counters are updated and the demo kit is unlocked.",
-        ),
-      ),
-    );
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
   return (
     <>
       <PageTitle
-        label={bi("L’ESPACE ORGANISATEURS", "THE ORGANISER SPACE")}
-        title={bi(
-          "Et si ça se\npassait chez vous ?",
-          "What if it\nhappened at yours?",
-        )}
+        title={bi("Organiser une séance", "Host a screening")}
         description={bi(
-          "Un programme à projeter. Une soirée à inventer ensemble.",
-          "A programme to screen. An evening to create together.",
+          "Cinéma, association ou lieu culturel : faites venir le programme chez vous.",
+          "Cinema, association or cultural venue: bring the programme to your audience.",
         )}
-        color="lime"
       />
       <section className="section-pad organiser-content">
-        <div className="organise-intro">
+        <div className="organiser-layout">
           <div>
-            <Label>{t(bi("COMMENT ÇA MARCHE ?", "HOW DOES IT WORK?"))}</Label>
-            <h2>
-              {t(
-                bi(
-                  "Trois temps.\nEt on chante.",
-                  "Three steps.\nThen we sing.",
-                ),
-              )}
-            </h2>
-          </div>
-          <ol className="steps">
-            <li>
-              <span>01</span>
-              <div>
-                <h3>
-                  {t(
-                    bi("Racontez-nous votre lieu", "Tell us about your venue"),
-                  )}
-                </h3>
+            {sent ? (
+              <div className="submission-success" role="status">
+                <Check size={32} />
+                <h2>{t(bi("Demande transmise", "Application submitted"))}</h2>
                 <p>
                   {t(
                     bi(
-                      "Quelques informations sur vous et la séance que vous imaginez.",
-                      "A few details about you and the screening you have in mind.",
+                      "Merci ! L’équipe Miyu vous répondra par email pour préparer votre séance.",
+                      "Thank you! The Miyu team will reply by email to arrange your screening.",
                     ),
                   )}
                 </p>
+                <button className="text-link" onClick={() => setSent(false)}>
+                  {t(bi("Faire une autre demande", "Send another application"))}
+                  <ArrowUpRight size={18} />
+                </button>
               </div>
-            </li>
-            <li>
-              <span>02</span>
-              <div>
-                <h3>
-                  {t(
-                    bi("On prépare ça ensemble", "We’ll get it ready together"),
-                  )}
-                </h3>
-                <p>
-                  {t(
-                    bi(
-                      "L’équipe étudie votre demande et confirme les modalités.",
-                      "The team reviews your application and confirms the arrangements.",
-                    ),
-                  )}
-                </p>
-              </div>
-            </li>
-            <li>
-              <span>03</span>
-              <div>
-                <h3>{t(bi("Le grand soir", "The big night"))}</h3>
-                <p>
-                  {t(
-                    bi(
-                      "Votre séance apparaît sur la carte. Vous recevez les informations et les ressources.",
-                      "Your screening appears on the map. You receive the details and resources.",
-                    ),
-                  )}
-                </p>
-              </div>
-            </li>
-          </ol>
-        </div>
-        <div className="demo-workspace">
-          <div className="demo-workspace-header">
-            <DemoNote>
-              {t(
-                bi(
-                  "SIMULATION LOCALE · utilisez des coordonnées fictives · aucune donnée envoyée",
-                  "LOCAL SIMULATION · use fictional contact details · no data is sent",
-                ),
-              )}
-            </DemoNote>
-            <button
-              className="text-link reset-demo"
-              onClick={() => {
-                update(initial());
-                setNotice(
-                  t(
-                    bi(
-                      "La démonstration a été réinitialisée.",
-                      "The demonstration has been reset.",
-                    ),
-                  ),
-                );
-                setResourceNotice("");
-              }}
-            >
-              <RotateCcw size={15} />
-              {t(bi("Réinitialiser la démo", "Reset demo"))}
-            </button>
-          </div>
-          <div
-            className="demo-tabs"
-            role="tablist"
-            aria-label={t(
-              bi("Étapes de la démonstration", "Demonstration steps"),
-            )}
-          >
-            {(["apply", "review", "resources"] as const).map((key, i) => (
-              <button
-                key={key}
-                role="tab"
-                id={`tab-${key}`}
-                aria-controls="demo-panel"
-                aria-selected={tab === key}
-                tabIndex={tab === key ? 0 : -1}
-                onKeyDown={(e) => {
-                  if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
-                    e.preventDefault();
-                    const keys = ["apply", "review", "resources"] as const;
-                    const next =
-                      keys[(i + (e.key === "ArrowRight" ? 1 : 2)) % 3];
-                    setTab(next);
-                    document.getElementById(`tab-${next}`)?.focus();
-                  }
-                }}
-                onClick={() => setTab(key)}
+            ) : (
+              <form
+                className="application-form"
+                action={`https://formsubmit.co/${ORGANISER_EMAIL}`}
+                method="POST"
+                onSubmit={submit}
+                aria-busy={submitting}
               >
-                <span>0{i + 1}</span>
-                {t(
-                  key === "apply"
-                    ? bi("Ma demande", "My application")
-                    : key === "review"
-                      ? bi("Validation démo", "Demo review")
-                      : bi("Mes ressources", "My resources"),
-                )}
-                {key === "review" &&
-                  state.applications.filter((a) => a.status === "pending")
-                    .length > 0 && (
-                    <span className="pending-count">
-                      {
-                        state.applications.filter((a) => a.status === "pending")
-                          .length
-                      }
-                    </span>
+                <div className="form-heading">
+                  <h2>{t(bi("Votre projection", "Your screening"))}</h2>
+                  <p>
+                    {t(
+                      bi(
+                        "Les champs marqués d’un * sont obligatoires.",
+                        "Fields marked with * are required.",
+                      ),
+                    )}
+                  </p>
+                </div>
+                <input
+                  type="hidden"
+                  name="_subject"
+                  value="Demande de projection — Sommes-nous seules dans l’univers ?"
+                />
+                <input type="hidden" name="_template" value="table" />
+                <div className="form-honeypot" aria-hidden="true">
+                  <label>
+                    Leave this field empty
+                    <input name="_honey" tabIndex={-1} autoComplete="off" />
+                  </label>
+                </div>
+                <fieldset disabled={submitting}>
+                  <div className="form-grid">
+                    <label>
+                      {t(bi("Organisation *", "Organisation *"))}
+                      <input
+                        name="Organisation"
+                        required
+                        maxLength={120}
+                        autoComplete="organization"
+                        placeholder={t(
+                          bi("Cinéma, association…", "Cinema, association…"),
+                        )}
+                      />
+                    </label>
+                    <label>
+                      {t(bi("Votre nom *", "Your name *"))}
+                      <input
+                        name="name"
+                        required
+                        maxLength={100}
+                        autoComplete="name"
+                      />
+                    </label>
+                    <label>
+                      {t(bi("Email de contact *", "Contact email *"))}
+                      <input
+                        name="email"
+                        type="email"
+                        required
+                        maxLength={254}
+                        autoComplete="email"
+                      />
+                    </label>
+                    <label>
+                      {t(bi("Nom du lieu *", "Venue name *"))}
+                      <input name="Lieu" required maxLength={120} />
+                    </label>
+                    <label>
+                      {t(bi("Ville *", "City *"))}
+                      <input
+                        name="Ville"
+                        required
+                        maxLength={120}
+                        autoComplete="address-level2"
+                      />
+                    </label>
+                    <label>
+                      {t(bi("Date souhaitée *", "Proposed date *"))}
+                      <input
+                        name="Date"
+                        type="date"
+                        required
+                        min={new Date().toLocaleDateString("en-CA")}
+                      />
+                    </label>
+                    <label>
+                      {t(bi("Horaire local *", "Local time *"))}
+                      <input
+                        name="Horaire"
+                        type="time"
+                        required
+                        defaultValue="20:00"
+                      />
+                    </label>
+                    <label>
+                      {t(bi("Accessibilité", "Accessibility"))}
+                      <select name="Accessibilité" defaultValue="À confirmer">
+                        <option value="À confirmer">
+                          {t(bi("À confirmer", "To be confirmed"))}
+                        </option>
+                        <option value="Accès sans marche">
+                          {t(bi("Accès sans marche", "Step-free access"))}
+                        </option>
+                      </select>
+                    </label>
+                    <label className="full-width">
+                      {t(
+                        bi(
+                          "Lien de billetterie (facultatif)",
+                          "Booking link (optional)",
+                        ),
+                      )}
+                      <input
+                        name="Billetterie"
+                        type="url"
+                        maxLength={2000}
+                        placeholder="https://…"
+                      />
+                    </label>
+                    <label className="full-width">
+                      {t(
+                        bi(
+                          "Votre message (facultatif)",
+                          "Your message (optional)",
+                        ),
+                      )}
+                      <textarea name="Message" maxLength={4000} rows={4} />
+                    </label>
+                  </div>
+                  {error && (
+                    <p role="alert" className="error-message">
+                      {error}
+                    </p>
                   )}
-              </button>
-            ))}
-          </div>
-          {notice && (
-            <div role="status" className="notice">
-              <Check size={19} />
-              {notice}
-            </div>
-          )}
-          {storageError && (
-            <div role="alert" className="error-message">
-              {t(
-                bi(
-                  "Le stockage local est indisponible. La démo fonctionne pour cette session, mais vos changements ne seront pas conservés.",
-                  "Local storage is unavailable. The demo works for this session, but changes will not be saved.",
-                ),
-              )}
-            </div>
-          )}
-          <div
-            className="demo-panel"
-            id="demo-panel"
-            role="tabpanel"
-            aria-labelledby={`tab-${tab}`}
-          >
-            {tab === "apply" ? (
-              <form onSubmit={submit} className="application-form">
-                <div className="form-heading">
-                  <h3>
-                    {t(bi("Faisons connaissance.", "Let’s get acquainted."))}
-                  </h3>
-                  <p>
-                    {t(
-                      bi(
-                        "Champs obligatoires marqués d’un *",
-                        "Required fields marked with *",
-                      ),
-                    )}
-                  </p>
-                </div>
-                <div className="form-grid">
-                  <label>
-                    {t(bi("Organisation *", "Organisation *"))}
-                    <input
-                      required
-                      maxLength={120}
-                      value={form.organisation}
-                      onChange={(e) => field("organisation", e.target.value)}
-                      placeholder={t(
-                        bi(
-                          "Cinéma, association, collectif…",
-                          "Cinema, association, collective…",
-                        ),
-                      )}
-                    />
-                  </label>
-                  <label>
-                    {t(bi("Votre nom *", "Your name *"))}
-                    <input
-                      required
-                      maxLength={100}
-                      value={form.name}
-                      onChange={(e) => field("name", e.target.value)}
-                      placeholder={t(
-                        bi("Un prénom, un nom", "First and last name"),
-                      )}
-                    />
-                  </label>
-                  <label>
-                    {t(bi("Email de contact *", "Contact email *"))}
-                    <input
-                      type="email"
-                      required
-                      value={form.email}
-                      onChange={(e) => field("email", e.target.value)}
-                      placeholder="bonjour@example.com"
-                    />
-                  </label>
-                  <label>
-                    {t(bi("Nom du lieu *", "Venue name *"))}
-                    <input
-                      required
-                      maxLength={120}
-                      value={form.venue}
-                      onChange={(e) => field("venue", e.target.value)}
-                      placeholder={t(bi("Votre salle", "Your venue"))}
-                    />
-                  </label>
-                  <label>
-                    {t(bi("Ville *", "City *"))}
-                    <select
-                      aria-label={t(bi("Ville *", "City *"))}
-                      required
-                      value={form.city}
-                      onChange={(e) => field("city", e.target.value)}
-                    >
-                      {cities.map((c) => (
-                        <option key={c.name}>{c.name}</option>
-                      ))}
-                    </select>
-                    <small>
-                      {t(
-                        bi(
-                          "10 villes disponibles dans cette démo.",
-                          "10 cities available in this demo.",
-                        ),
-                      )}
-                    </small>
-                  </label>
-                  <label>
-                    {t(bi("Date souhaitée *", "Proposed date *"))}
-                    <input
-                      type="date"
-                      required
-                      min={new Date().toLocaleDateString("en-CA")}
-                      value={form.date}
-                      onChange={(e) => field("date", e.target.value)}
-                    />
-                  </label>
-                  <label>
-                    {t(bi("Horaire local *", "Local time *"))}
-                    <input
-                      type="time"
-                      required
-                      value={form.time}
-                      onChange={(e) => field("time", e.target.value)}
-                    />
-                  </label>
-                  <label>
-                    {t(bi("Accessibilité", "Accessibility"))}
-                    <select
-                      aria-label={t(bi("Accessibilité", "Accessibility"))}
-                      value={form.accessibility}
-                      onChange={(e) => field("accessibility", e.target.value)}
-                    >
-                      <option value="unknown">
-                        {t(bi("À confirmer", "To be confirmed"))}
-                      </option>
-                      <option value="step-free">
-                        {t(bi("Accès sans marche", "Step-free access"))}
-                      </option>
-                    </select>
-                  </label>
-                  <label className="full-width">
-                    {t(
-                      bi(
-                        "Lien de billetterie (facultatif)",
-                        "Booking link (optional)",
-                      ),
-                    )}
-                    <input
-                      type="url"
-                      value={form.booking}
-                      onChange={(e) => field("booking", e.target.value)}
-                      placeholder="https://…"
-                    />
-                  </label>
-                </div>
-                {error && (
-                  <p role="alert" className="error-message">
-                    {error}
-                  </p>
-                )}
-                <div className="form-bottom">
-                  <p>
-                    {t(
-                      bi(
-                        "Démonstration uniquement. Vos informations restent dans ce navigateur.",
-                        "Demonstration only. Your information stays in this browser.",
-                      ),
-                    )}
-                  </p>
-                  <button type="submit" className="pill-button dark">
-                    {t(
-                      bi("Créer ma demande démo", "Create my demo application"),
-                    )}
-                    <ArrowUpRight size={20} />
-                  </button>
-                </div>
-              </form>
-            ) : tab === "review" ? (
-              <div>
-                <div className="form-heading">
-                  <h3>
-                    {t(bi("De l’idée à la séance.", "From idea to screening."))}
-                  </h3>
-                  <p>
-                    {t(
-                      bi(
-                        "Panneau de simulation, sans accès administrateur réel.",
-                        "Simulation panel, without real administrator access.",
-                      ),
-                    )}
-                  </p>
-                </div>
-                {!state.applications.length ? (
-                  <div className="empty-state">
-                    <Star />
-                    <h3>
-                      {t(
-                        bi(
-                          "Tout commence par une idée.",
-                          "It all starts with an idea.",
-                        ),
-                      )}
-                    </h3>
+                  <div className="form-bottom">
                     <p>
                       {t(
                         bi(
-                          "Créez une demande dans le premier onglet.",
-                          "Create an application in the first tab.",
+                          "Votre demande sera envoyée à Miyu Distribution. La séance sera confirmée avec l’équipe par email.",
+                          "Your application will be sent to Miyu Distribution. The team will confirm the screening by email.",
                         ),
                       )}
                     </p>
                     <button
-                      className="text-link"
-                      onClick={() => setTab("apply")}
+                      type="submit"
+                      className="pill-button dark"
+                      disabled={submitting}
                     >
-                      {t(bi("Faire une demande", "Create an application"))}
-                      <ArrowRight size={18} />
+                      {t(
+                        submitting
+                          ? bi("Envoi en cours…", "Sending…")
+                          : bi("Envoyer ma demande", "Send my application"),
+                      )}
+                      <ArrowUpRight size={20} />
                     </button>
                   </div>
-                ) : (
-                  state.applications.map((app) => (
-                    <div className="application-row" key={app.id}>
-                      <div>
-                        <h3>{app.organisation}</h3>
-                        <p>
-                          {app.venue} · {app.city}
-                        </p>
-                        <small>
-                          {app.date} · {app.time} · {app.email}
-                        </small>
-                      </div>
-                      {app.status === "approved" ? (
-                        <span className="approved">
-                          <Check size={18} />
-                          {t(bi("Approuvée", "Approved"))}
-                        </span>
-                      ) : (
-                        <button
-                          className="pill-button dark"
-                          onClick={() => approve(app.id)}
-                        >
-                          {t(bi("Approuver (démo)", "Approve (demo)"))}
-                          <Check size={18} />
-                        </button>
-                      )}
-                    </div>
-                  ))
-                )}
-              </div>
-            ) : (
-              <div>
-                <div className="form-heading">
-                  <h3>{t(bi("La boîte à outils.", "The toolkit."))}</h3>
-                  <p>
-                    {t(
-                      approved
-                        ? bi(
-                            "Votre kit démo est débloqué. Les fichiers officiels sont à venir.",
-                            "Your demo kit is unlocked. Official files are coming soon.",
-                          )
-                        : bi(
-                            "Approuvez une demande démo pour débloquer cet espace.",
-                            "Approve a demo application to unlock this space.",
-                          ),
-                    )}
-                  </p>
-                </div>
-                {resources.map((r) => (
-                  <div className="resource-row" key={r.type + r.title.fr}>
-                    <span className="resource-type">{r.type}</span>
-                    <div>
-                      <h3>{t(r.title)}</h3>
-                      <p>{t(r.description)}</p>
-                    </div>
-                    <button
-                      className="icon-button resource-download"
-                      disabled={!approved}
-                      aria-label={t(
-                        bi(
-                          `Disponibilité : ${r.title.fr}`,
-                          `Availability: ${r.title.en}`,
-                        ),
-                      )}
-                      onClick={() =>
-                        setResourceNotice(
-                          t(
-                            bi(
-                              "Accès démo accordé. Le fichier officiel sera ajouté après validation des éléments graphiques.",
-                              "Demo access granted. The official file will be added after artwork is finalised.",
-                            ),
-                          ),
-                        )
-                      }
-                    >
-                      <Download size={21} />
-                    </button>
-                  </div>
-                ))}
-                {resourceNotice && (
-                  <p role="status" className="notice">
-                    {resourceNotice}
-                  </p>
-                )}
-                <p className="availability">
-                  {t(
-                    bi(
-                      "Liens de visionnage, affiches et matériel supplémentaire : contactez l’équipe lorsque ses coordonnées seront disponibles.",
-                      "For viewing links, posters and further materials, contact the team once their details are available.",
-                    ),
-                  )}
-                </p>
-              </div>
+                </fieldset>
+              </form>
             )}
           </div>
+          <aside className="organiser-aside">
+            <img
+              src={assetUrl("/images/films/2-love.webp")}
+              alt={t(bi("Image de 2:LOVE", "Still from 2:LOVE"))}
+            />
+            <h2>{t(bi("Six films, une heure", "Six films, one hour"))}</h2>
+            <p>
+              {t(
+                bi(
+                  "Un programme d’animation et de comédie musicale, présenté par Miyu Distribution en partenariat avec Vivement Lundi !.",
+                  "A programme of animated musical shorts, presented by Miyu Distribution in partnership with Vivement Lundi !.",
+                ),
+              )}
+            </p>
+            <a
+              className="text-link"
+              href={assetUrl("/images/programme-poster.webp")}
+              download="sommes-nous-seules-affiche.webp"
+            >
+              {t(bi("Télécharger l’affiche", "Download the poster"))}
+              <Download size={18} />
+            </a>
+            <p className="organiser-contact">
+              {t(bi("Une question ?", "Any questions?"))}
+              <a href={`mailto:${ORGANISER_EMAIL}`}>{ORGANISER_EMAIL}</a>
+            </p>
+          </aside>
         </div>
       </section>
     </>
@@ -2062,25 +1405,33 @@ function SmallCTA({ host = false }: { host?: boolean }) {
   const { t } = useApp();
   return (
     <section className="small-cta section-pad">
-      <h2>
-        {t(
-          host
-            ? bi("Votre ville manque\nà l’appel ?", "Is your city\nmissing?")
-            : bi(
-                "Ça se passe\nsur grand écran.",
-                "It happens\non the big screen.",
+      <div>
+        <h2>
+          {t(
+            host
+              ? bi("Dans votre salle", "In your cinema")
+              : bi("On se retrouve au cinéma", "See you at the cinema"),
+          )}
+        </h2>
+        {host && (
+          <p>
+            {t(
+              bi(
+                "Cinéma, association ou lieu culturel : accueillez le programme.",
+                "Cinema, association or cultural venue: host the programme.",
               ),
+            )}
+          </p>
         )}
-      </h2>
+      </div>
       <Link className="pill-button dark" to={host ? "/organiser" : "/seances"}>
         {t(
           host
             ? bi("Organiser une séance", "Host a screening")
             : bi("Trouver une séance", "Find a screening"),
         )}
-        <ArrowUpRight />
+        <ArrowUpRight size={20} />
       </Link>
-      <Star />
     </section>
   );
 }
@@ -2088,55 +1439,33 @@ function Footer() {
   const { t } = useApp();
   return (
     <footer className="footer section-pad">
-      <div className="footer-top">
-        <Label light>
-          {t(
-            bi(
-              "LE GÉNÉRIQUE N’EST QU’UN DÉBUT",
-              "THE CREDITS ARE JUST THE BEGINNING",
-            ),
-          )}
-        </Label>
-        <Link to="/contact" className="text-link">
-          {t(bi("On reste en contact", "Let’s stay in touch"))}
-          <ArrowUpRight size={20} />
-        </Link>
-      </div>
-      <div className="footer-title">
-        <span>
-          {t(bi("ON SE RETROUVE", "SEE YOU"))}
-          <br />
-          {t(bi("DANS LE NOIR.", "IN THE DARK."))}
-        </span>
-        <Link
-          to="/a-propos"
-          className="footer-eye"
-          aria-label={t(bi("Découvrir Miyu", "Discover Miyu"))}
-        >
-          <Eye />
-        </Link>
-      </div>
-      <div className="footer-bottom">
-        <Link to="/" className="brand">
+      <div className="footer-partners">
+        <Link to="/a-propos" className="brand">
           miyu<span className="brand-sub">DISTRIBUTION</span>
         </Link>
-        <span>
-          {t(bi("Des films. Des chansons. Et vous.", "Films. Songs. And you."))}
-        </span>
+        <div className="partner-mark">
+          <span>{t(bi("En partenariat avec", "In partnership with"))}</span>
+          <img
+            src={assetUrl("/images/vivement-lundi.svg")}
+            alt="Vivement Lundi !"
+            width="605"
+            height="197"
+          />
+        </div>
+      </div>
+      <div className="footer-bottom">
+        <p>{t(anthology)}</p>
         <nav aria-label={t(bi("Pied de page", "Footer"))}>
-          <Link to="/contact">Contact</Link>
+          <Link to="/programme">{t(bi("Programme", "Programme"))}</Link>
           <Link to="/presse">{t(bi("Presse", "Press"))}</Link>
-          <Link to="/organiser">
-            {t(bi("Espace organisateurs", "Organiser space"))}
-          </Link>
+          <Link to="/contact">Contact</Link>
+          <Link to="/organiser">{t(bi("Organisateurs", "Organisers"))}</Link>
         </nav>
-        <span className="footer-demo">
-          {t(bi("PROTOTYPE · 2026", "PROTOTYPE · 2026"))}
-        </span>
       </div>
     </footer>
   );
 }
+
 function TrailerModal({ close }: { close: () => void }) {
   const { t } = useApp();
   const ref = useRef<HTMLDialogElement>(null);
@@ -2170,38 +1499,27 @@ function TrailerModal({ close }: { close: () => void }) {
         >
           <X />
         </button>
-        <div className="trailer-placeholder">
-          <Eye />
-          <span>
-            {t(bi("LE SUSPENSE EST ENTIER.", "THE SUSPENSE IS REAL."))}
-          </span>
-        </div>
+        <img
+          className="trailer-cover"
+          src={assetUrl("/images/films/tuna-tartare.webp")}
+          alt={t(bi("Image de Tuna Tartare", "Still from Tuna Tartare"))}
+        />
         <div className="trailer-caption">
-          <Label>{t(bi("LA BANDE-ANNONCE", "THE TRAILER"))}</Label>
-          <h2 id="trailer-title">
-            {t(bi("Encore un peu\nde patience.", "Just a little\nlonger."))}
-          </h2>
+          <h2 id="trailer-title">{t(bi("Bande-annonce", "Trailer"))}</h2>
           <p>
             {t(
               bi(
-                "La bande-annonce officielle arrive bientôt. Cet espace accueillera le lecteur vidéo dès qu’elle sera disponible.",
-                "The official trailer is coming soon. This space will contain the video player once it is available.",
+                "La vidéo sera disponible ici prochainement.",
+                "The video will be available here soon.",
               ),
             )}
           </p>
-          <DemoNote>
-            {t(
-              bi(
-                "Aucune vidéo fournie avec le brief.",
-                "No video was supplied with the brief.",
-              ),
-            )}
-          </DemoNote>
         </div>
       </div>
     </dialog>
   );
 }
+
 function NotFound() {
   const { t } = useApp();
   return (

@@ -1,59 +1,61 @@
-# Sommes-nous seuls dans l’univers ?
+# Sommes-nous seules dans l’univers ?
 
-A local bilingual creative prototype for Miyu’s musical short-film anthology. React, TypeScript, Vite, custom CSS, and a bundled SVG map. No server, account, API key, or hosted service is needed.
+A bilingual website for Miyu Distribution’s six-film animated musical programme. React, TypeScript and Vite, with supplied film stills, real programme credits, locally hosted fonts and a geographic France map.
 
-## Run
+## Run and build
 
 ```sh
 npm install
 npm run dev
-```
-
-Open the URL printed by Vite, normally http://localhost:5173.
-
-```sh
 npm run build
 npm run preview
+```
+
+Development serves at `http://localhost:5173/`. Production retains the existing GitHub Pages base `/s-nsd/`; preview serves at `http://localhost:4173/s-nsd/`. The build generates entrypoints for every film and the existing routes, including legacy film URLs.
+
+## Email applications
+
+The organiser form sends real applications to **stagiaire.diffusion@miyu.fr** through the free FormSubmit service. It uses its documented AJAX endpoint, a table email template, a contextual subject, the applicant’s email as Reply-To, and a hidden honeypot. The form supports any city, a screening date/time, accessibility, an optional booking URL and a message. It displays pending, confirmation and failure states, retains input on failure, and offers the same address as an email alternative.
+
+**One-time setup:** the first genuine submission triggers an activation email to the recipient. The recipient must follow FormSubmit’s confirmation link before enquiries are delivered. No test submission or activation request was sent during implementation, as requested. See https://formsubmit.co/ and https://formsubmit.co/documentation.
+
+The service’s acceptance does not establish inbox delivery. This integration has not been tested by submitting a form. Browser checks block the service and never click the submit button.
+
+Applications are sent to the team for review. They do not automatically publish a screening or approve themselves. There is no public simulated approval panel.
+
+## Content and assets
+
+- `src/data.ts`: six actual films, directors, producers, exact runtimes, techniques, short/full bilingual synopses, and demonstration screening records.
+- `src/main.tsx`: presentation pages, navigation, screening filters, map, organiser email form and trailer placement.
+- `src/campaign.css`: shared magenta/yellow/violet campaign styling and Chicle headlines.
+- `src/art-direction.css`: full-bleed poster composition, expressive title placement, staggered open film gallery and responsive portrait framing. Film gallery images retain their original proportions; the hero uses a responsive crop.
+- `src/geography.ts`: public-domain Natural Earth geography projected with Lambert conformal conic. `cities` holds longitude/latitude. Named city lookup corrects positions in older browser-local records.
+- `public/images/films/`: all six supplied stills, encoded to WebP without crops or recolouring.
+- `public/images/programme-poster.webp`: the secondary poster embedded in the programme document, available to download from the press and organiser pages.
+- `public/images/vivement-lundi.svg`: browser-compatible conversion of the supplied EPS partner logo.
+- `public/fonts/`: self-hosted fonts and their licences. No external font requests are needed.
+
+The primary poster shown in chat guides the design. It differs from the secondary poster embedded in the document. The private full-film screening URLs and passwords from the source document are not included in the website.
+
+The uploaded MP4 exceeded the environment’s 32 MiB transfer limit. The trailer placement therefore remains unavailable until an accessible video export or hosted trailer URL is supplied. No unrelated video is substituted.
+
+## Screening data
+
+Screenings are still explicitly marked as demonstrations: no confirmed real venues or booking records were supplied. Language and the pre-existing sample screening state may persist in localStorage. The form does not save applicant contact details to localStorage. Before announcing actual screenings, replace `seedScreenings` with confirmed records or connect a managed source of approved screening data.
+
+## Verification
+
+```sh
 npm test
 npm run test:browser
 ```
 
-Browser checks require Chromium. They use `/usr/bin/chromium` by default; set `CHROMIUM_PATH` to override it. Start the dev server before running the browser checks. Set `TEST_URL` if it runs on another port. QA screenshots are written to ignored `.qa/`.
+Start the development server before running browser checks. Chromium defaults to `/usr/bin/chromium`; set `CHROMIUM_PATH` or `TEST_URL` if needed. Checks cover programme metadata, film routes, FR/EN navigation, the modal, city projection and zoom alignment, map filters, mobile navigation, image loading and overflow at desktop/tablet/mobile sizes. They make zero email-service requests and do not submit or exercise the email form. Screenshots are stored in ignored `.qa/`.
 
-## Review the demo
-
-1. Visit **J’organise**. Use fictional contact details to submit a screening application.
-2. Open **Validation démo** and approve the application.
-3. The screening appears immediately on the map and list; homepage counters update.
-4. **Mes ressources** unlocks a simulated packet. Official downloads are unavailable until supplied.
-5. Refresh to check browser-local persistence. **Réinitialiser la démo** restores the initial sample screenings and removes applications from this browser.
-
-No information is submitted or emailed. The review panel is a simulation without authentication. Language and demo data are stored in localStorage. Resetting the demo leaves the selected language intact. Sample dates start two weeks after the first launch and persist with the demo state after a change.
-
-## Replace the sample content
-
-- `src/data.ts`: bilingual titles and descriptions, six film entries, city positions, initial screenings, and organiser resource descriptions. `bi(french, english)` keeps translations together. All six films, credits, dates, venues, and numbers are illustrative.
-- `public/images/`: replace concept images with licensed film stills or approved campaign graphics. Keep existing filenames to avoid code changes, or update the image paths in `src/data.ts`. The homepage uses `hero.webp`.
-- `src/experimental.css`: the exhibition compositions, monochrome palette, pointer-responsive portal, and dimension-switch treatment. The palette uses modern white backgrounds, charcoal typography, monochrome imagery, and a restrained acid-yellow accent. `src/styles.css` contains the shared layout and form styles. `--display` controls condensed headlines, `--serif` the expressive italic type, and `--body` supporting text. Fonts currently load from Google Fonts; self-host them if offline operation is required.
-- `src/main.tsx`: page copy, the supplied Miyu introduction, navigation, and placeholder contact details. Search for `À confirmer`, `à venir`, and `coming soon` when preparing final content. `TrailerModal` is the anthology trailer placement; replace its availability panel with a video player after the official trailer is supplied. Individual film trailers have an availability placement in `FilmDetail`.
-- The provisional title follows the project brief with standard French spelling. Confirm the final title, English translations, programme metadata, timings, credits, and accessibility information with the team.
-
-After changing initial screenings, reset the demo in the organiser page so previously persisted sample data does not override them. For cities beyond the ten supplied demo options, add their approximate SVG positions to `cities` in `src/data.ts`. Dates are ISO calendar dates; screening times are local to the venue.
-
-## Production boundary
-
-Before launch, replace all sample material and implement a backend for applications, authenticated review, approved screening publication, and email delivery. Replace the local simulation with server-authorised access to organiser files. Approval must remain idempotent and update partner/city totals from the approved records. The existing frontend does not provide security or durable shared data.
-
-The SVG map is a stylised outline of metropolitan France, with the full accessible screening list beside it. Booking links accept only HTTP(S). No ticket sales are implemented. Press coverage is intentionally empty, and contact information is explicitly pending rather than invented.
-
-The anthology artwork and reference-photo sources are documented in [ASSETS.md](ASSETS.md).
-
-## GitHub Pages
+## Existing hosting
 
 Repository: https://github.com/xlaesch/s-nsd
 
 Site: https://xlaesch.github.io/s-nsd/
 
-Pushes to `main` run the Pages workflow, test the demo logic, build the site, and deploy `dist/`. Production builds use `/s-nsd/`; local development stays at `/`. `src/paths.ts` resolves image URLs, and `scripts/pages-routes.mjs` creates entrypoints for deep links and refreshes. Add new public routes to that script when extending the site.
-
-`npm run preview` serves the production build at http://localhost:4173/s-nsd/.
+The existing Pages workflow deploys `dist/` on pushes to `main`. Local implementation does not itself update that deployment.

@@ -1,0 +1,230 @@
+/* The campaign reads as a film poster, then an open photographic programme. */
+:root { --page-pad: clamp(22px, 5vw, 90px); }
+.header { height: 78px; background: #261334; }
+.main-nav { gap: 26px; }
+.main-nav a { font-size: 12px; }
+.organise-link { border-bottom: 0; }
+.pill-button { border-radius: 0; }
+.campaign-hero {
+  position: relative;
+  height: clamp(820px, calc(100svh - 78px), 1100px);
+  padding: 0;
+  background: #261650;
+  isolation: isolate;
+}
+.campaign-hero .hero-art { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; }
+.campaign-hero .hero-art img {
+  height: 100%; width: 100%; object-fit: cover; object-position: 50% 36%;
+}
+.campaign-hero .hero-art::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(0deg, #261334 0%, #26133400 40%);
+  pointer-events: none;
+}
+.campaign-hero .hero-art figcaption {
+  position: absolute; z-index: 1; right: 16px; top: 50%;
+  writing-mode: vertical-rl; color: #fffaf6b3; font-size: 9px;
+  letter-spacing: .06em; padding: 0;
+}
+.campaign-heading { display: block; position: relative; width: 100%; height: 100%; padding: 0; }
+.campaign-hero h1 {
+  position: absolute; inset: 28px var(--page-pad) 146px;
+  font-size: clamp(120px, 15.4vw, 264px); line-height: .82;
+  letter-spacing: -.012em; font-weight: 400;
+}
+.campaign-hero h1 > span { position: absolute; margin: 0; line-height: .82; }
+.campaign-hero h1 > span:first-child { top: 0; left: 0; }
+.campaign-hero h1 > span:nth-child(2) { right: 0; top: 25%; font-size: .95em; transform: rotate(2deg); }
+.campaign-hero h1 > span:nth-child(3) { bottom: 0; left: 0; font-size: .86em; }
+.campaign-intro { position: absolute; inset: 0; max-width: none; padding: 0; pointer-events: none; }
+.campaign-intro .release-date {
+  position: absolute; left: var(--page-pad); top: 38%; width: 148px; height: 148px;
+  border: 1px solid #fff000b0; border-radius: 50%; transform: rotate(-12deg);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  margin: 0; font-size: 13px; font-weight: 500; line-height: 1.2; color: var(--yellow);
+  background: #26133440;
+}
+.release-date strong { font: 400 67px/.9 var(--display); margin: 6px 0; }
+.campaign-intro .anthology-line {
+  position: absolute; bottom: 33px; left: var(--page-pad); font-size: 14px;
+  line-height: 1.5; max-width: 410px; color: var(--paper);
+}
+.hero-actions { position: absolute; bottom: 32px; right: var(--page-pad); margin: 0; flex-direction: row; align-items: center; gap: 34px; pointer-events: auto; }
+.hero-actions .pill-button.primary {
+  background: transparent; color: var(--yellow); border-bottom: 1px solid currentColor;
+  padding: 12px 0; font-size: 18px; font-weight: 500; gap: 30px;
+}
+.hero-actions .pill-button.primary:hover { background: transparent; transform: none; }
+.hero-actions .trailer-sticker { color: var(--yellow); border: 0; padding: 12px 0; gap: 12px; font-size: 14px; }
+.hero-actions .trailer-sticker svg { width: 34px; height: 34px; border: 1px solid currentColor; border-radius: 50%; padding: 8px; }
+.film-preview, .programme-content { padding-top: 100px; padding-bottom: 150px; }
+.film-preview .section-heading { position: relative; margin-bottom: 90px; gap: 60px; }
+.section-overline { text-transform: uppercase; letter-spacing: .14em; font-size: 11px !important; margin: 0 0 22px !important; }
+.film-preview .section-heading h2 { font-size: clamp(74px, 9vw, 148px); letter-spacing: -.02em; }
+.film-preview .section-heading p:not(.section-overline) { max-width: 590px; margin-top: 22px; font-size: 16px; }
+.film-preview .section-heading > .text-link { align-self: center; }
+.film-grid { grid-template-columns: minmax(0, 1.14fr) minmax(0, 1fr); gap: 100px 9%; align-items: start; }
+.film-card { position: relative; display: block; }
+.film-card:nth-child(even) { transform: translateY(110px); }
+.film-index { display: block; font: 400 34px/1 var(--display); color: var(--magenta); margin-bottom: 12px; }
+.film-image, .film-card:nth-child(2) .film-image, .film-card:nth-child(3) .film-image { aspect-ratio: auto; overflow: hidden; background: transparent; }
+.film-image img { height: auto; aspect-ratio: auto; object-fit: contain; transition: transform .6s ease; }
+.film-card:hover img { transform: scale(1.025); }
+.film-card-title { padding-top: 20px; }
+.film-card-title h3 { font-size: clamp(38px, 4.1vw, 66px); letter-spacing: -.015em; line-height: .98; }
+.film-card-title svg { width: 27px; height: 27px; margin-top: 4px; }
+.film-card > .film-director { font-size: 13px; font-weight: 400; margin-top: 13px; }
+.film-preview .film-synopsis, .film-preview .film-production { display: none; }
+.programme-grid { margin-top: 60px; }
+.programme-content { padding-top: 40px; }
+.programme-content .film-synopsis { max-width: 450px; margin-top: 17px; }
+.home-screenings { background: #452a5c; position: relative; }
+.screenings-pitch { padding-top: 88px; padding-bottom: 88px; }
+.screenings-pitch h2 { font-size: clamp(74px, 9.2vw, 148px); line-height: .88; letter-spacing: -.02em; }
+.screenings-pitch p { font-size: 15px; margin-top: 12px; }
+.home-map { display: flex; align-items: center; justify-content: center; padding: 40px; }
+.home-map .france-map { max-width: 530px; }
+.home-map .france-shape { fill: var(--yellow); }
+.home-map .map-city { fill: var(--ink); stroke: var(--yellow); }
+.home-map .map-point { fill: var(--magenta); stroke: var(--ink); }
+.home-screenings .pill-button.primary { background: transparent; color: var(--yellow); padding: 12px 0; border-bottom: 1px solid currentColor; font-size: 18px; }
+.small-cta { background: var(--paper); padding-top: 74px; padding-bottom: 74px; }
+.small-cta h2 { color: var(--magenta); font-size: clamp(48px, 5.5vw, 84px); }
+.small-cta p { font-size: 14px; }
+.small-cta .pill-button { border-radius: 0; background: transparent; color: var(--magenta); border-bottom: 1px solid currentColor; padding: 12px 0; }
+.small-cta .pill-button:hover { background: transparent; color: var(--ink); transform: none; }
+.page-title { padding-top: 70px; padding-bottom: 60px; background: #452a5c; }
+.page-title h1 { font-size: clamp(72px, 10vw, 158px); letter-spacing: -.015em; }
+.page-title > p { font-size: 15px; }
+.film-detail h1 { font-size: clamp(80px, 10vw, 156px); }
+.footer { background: #261334; }
+.footer-partners { padding-bottom: 40px; }
+.footer .brand { font-size: 76px; }
+.footer .brand-sub { font-size: 10px; }
+@media (min-width: 1800px) {
+  .campaign-hero h1 { left: calc((100% - 1620px)/2); right: calc((100% - 1620px)/2); }
+}
+@media (max-width: 1100px) and (min-width: 801px) {
+  .campaign-hero { height: 820px; }
+  .campaign-hero h1 { font-size: 15.5vw; bottom: 175px; }
+  .campaign-hero h1 > span:nth-child(2) { top: 24%; font-size: 1.1em; }
+  .campaign-intro .release-date { width: 120px; height: 120px; }
+  .release-date strong { font-size: 52px; }
+  .hero-actions { gap: 22px; }
+  .hero-actions .pill-button.primary { font-size: 15px; gap: 15px; }
+  .campaign-intro .anthology-line { font-size: 12px; max-width: 300px; }
+  .hero-actions .trailer-sticker { font-size: 12px; }
+}
+@media (max-width: 800px) {
+  .header { height: 72px; }
+  .mobile-nav { top: 72px; }
+  .campaign-hero { height: 850px; padding: 0; }
+  .campaign-hero .hero-art img { object-position: 50% 42%; }
+  .campaign-hero h1 { inset: 30px var(--page-pad) 200px; font-size: 15.5vw; }
+  .campaign-hero h1 > span:nth-child(2) { top: 22%; font-size: 1.25em; }
+  .campaign-hero h1 > span:nth-child(3) { font-size: .85em; }
+  .campaign-intro .release-date { top: 36%; width: 115px; height: 115px; font-size: 11px; }
+  .release-date strong { font-size: 50px; }
+  .campaign-intro .anthology-line { bottom: 119px; font-size: 13px; }
+  .hero-actions { left: var(--page-pad); right: auto; bottom: 38px; gap: 32px; }
+  .hero-actions .pill-button.primary { font-size: 16px; gap: 18px; }
+  .hero-actions .trailer-sticker { font-size: 13px; }
+  .film-preview, .programme-content { padding-top: 66px; padding-bottom: 105px; }
+  .film-preview .section-heading { margin-bottom: 46px; gap: 18px; }
+  .film-preview .section-heading h2 { font-size: 11.5vw; }
+  .film-preview .section-heading > .text-link { align-self: flex-start; }
+  .film-grid { gap: 54px 6%; }
+  .film-card:nth-child(even) { transform: translateY(65px); }
+  .film-index { font-size: 26px; }
+  .film-card-title h3 { font-size: 5vw; }
+  .film-card-title { padding-top: 15px; }
+  .film-card-title svg { width: 20px; height: 20px; }
+  .film-card > .film-director { font-size: 11px; }
+  .programme-grid { margin-top: 40px; }
+  .page-title { padding-top: 44px; padding-bottom: 40px; }
+  .page-title h1 { font-size: 12vw; }
+  .screenings-pitch { padding-top: 60px; padding-bottom: 60px; }
+  .screenings-pitch h2 { font-size: 10vw; }
+  .home-map { padding: 22px; }
+  .small-cta h2 { font-size: 7vw; }
+  .footer .brand { font-size: 62px; }
+  .footer .brand-sub { font-size: 8px; }
+}
+@media (max-width: 500px) {
+  .campaign-hero { height: max(720px, calc(100svh - 72px)); }
+  .campaign-hero h1 { inset: 28px 20px 204px; font-size: 16.3vw; line-height: .85; }
+  .campaign-hero h1 > span:nth-child(2) { top: 20%; font-size: 1.5em; }
+  .campaign-hero h1 > span:nth-child(3) { font-size: .86em; }
+  .campaign-intro .release-date { left: 24px; top: 36%; width: 92px; height: 92px; font-size: 10px; }
+  .release-date strong { font-size: 42px; margin: 3px 0; }
+  .campaign-intro .anthology-line { bottom: 132px; font-size: 12px; max-width: 310px; }
+  .hero-actions { right: var(--page-pad); bottom: 27px; flex-direction: column; align-items: flex-start; gap: 9px; }
+  .hero-actions .pill-button.primary { width: 100%; font-size: 16px; }
+  .hero-actions .trailer-sticker { font-size: 12px; padding: 7px 0; }
+  .hero-actions .trailer-sticker svg { width: 28px; height: 28px; padding: 6px; }
+  .campaign-hero .hero-art figcaption { right: 7px; font-size: 7px; top: 37%; }
+  .film-preview { padding-top: 54px; padding-bottom: 64px; }
+  .film-preview .section-heading h2 { font-size: 16vw; }
+  .section-overline { font-size: 9px !important; margin-bottom: 16px !important; }
+  .film-preview .section-heading p:not(.section-overline) { font-size: 14px; margin-top: 20px; }
+  .film-grid { grid-template-columns: 1fr; gap: 44px; }
+  .film-card:nth-child(even) { transform: none; margin-left: 26px; }
+  .film-card:nth-child(odd) { margin-right: 12px; }
+  .film-index { font-size: 28px; margin-bottom: 10px; }
+  .film-card-title h3 { font-size: 42px; }
+  .film-card > .film-director { font-size: 12px; }
+  .programme-content { padding-top: 26px; padding-bottom: 60px; }
+  .programme-grid { margin-top: 30px; }
+  .page-title h1 { font-size: 16vw; overflow-wrap: normal; }
+  .page-title > p { font-size: 14px; }
+  .film-detail h1 { font-size: 18vw; }
+  .screenings-pitch { padding-top: 52px; padding-bottom: 20px; }
+  .screenings-pitch h2 { font-size: 23vw; }
+  .home-map { padding: 10px 30px 40px; }
+  .home-map .france-map { max-width: 320px; }
+  .small-cta { padding-top: 52px; padding-bottom: 52px; gap: 20px; }
+  .small-cta h2 { font-size: 14vw; }
+  .small-cta p { font-size: 13px; }
+  .footer .brand { font-size: 56px; }
+  .footer .brand-sub { font-size: 7px; }
+}
+@media (prefers-reduced-motion: reduce) { .film-image img { transition: none; } }
+@media (max-width: 800px) {
+  /* Give the face room beneath the title in the portrait composition. */
+  .campaign-hero .hero-art img { transform: translateY(92px); mask-image: linear-gradient(to bottom, transparent, #000 60px); }
+  .campaign-hero h1 > span:nth-child(2) { top: 16%; }
+}
+/* Let navigation float directly over the page, without a separate bar. */
+.header {
+  position: absolute;
+  inset: 0 0 auto;
+  width: 100%;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+.header-paper { color: var(--ink); }
+.header-paper .brand,
+.header-paper .languages button[aria-pressed="true"],
+.header-paper .organise-link { color: var(--magenta); }
+.header-paper .main-nav a::after { background: var(--magenta); }
+.header-paper :focus-visible { outline-color: var(--magenta); }
+.campaign-hero { height: clamp(898px, 100svh, 1178px); }
+.campaign-hero h1 { top: 106px; }
+.page-title { padding-top: 148px; }
+.film-detail { padding-top: 112px; }
+.not-found { padding-top: 158px; }
+@media (max-width: 1100px) and (min-width: 801px) {
+  .campaign-hero { height: 898px; }
+}
+@media (max-width: 800px) {
+  .campaign-hero { height: 922px; }
+  .campaign-hero h1 { top: 102px; }
+  .page-title { padding-top: 116px; }
+  .film-detail { padding-top: 120px; }
+  .not-found { padding-top: 120px; }
+}
+@media (max-width: 500px) {
+  .campaign-hero { height: max(792px, 100svh); }
+  .campaign-hero h1 { top: 100px; }
+}

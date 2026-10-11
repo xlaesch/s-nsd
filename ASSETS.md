@@ -1,37 +1,38 @@
-# Prototype artwork
+# Campaign assets
 
-All assets are provisional concept visuals, not official film stills or approved Miyu branding. The wordmark is a typographic stand-in. Final campaign assets should replace them.
+## Supplied material
 
-## Generated artwork
+The programme document supplied in chat contains six film stills and one secondary programme poster. Both uploaded copies are identical. The website uses the real programme metadata from that document. `instructions.docx` was read as supplied reference material; the user’s chat request controls the work.
 
-Saved project asset: `public/images/hero.webp`.
-
-Generated with the built-in imagegen tool, then encoded to WebP for delivery. Original generation remains in the Codex generated-images directory. No CLI/API fallback was used.
-
-Final prompt:
-
-> Use case: stylized-concept. Asset type: temporary editorial artwork for a very experimental French animated-short-film anthology website about music and being alone in the universe. Make a wide landscape image 1536x1024, no text or lettering. Dreamlike art-film scene: a lonely tiny coral-red humanoid clay figure with a spherical head holding a vintage microphone, standing on a blue sculptural lunar landscape. A giant orange-red sun hovers behind. Jagged blue mountain silhouettes, pale mint sky, scattered cobalt spheres and a strange yellow curved staircase. High-end tactile stop motion clay and paper set, grainy film texture, surreal mid-century graphic composition, cinematic shadows, striking electric cobalt, orange, pale mint and yellow palette. Strong flat graphic silhouettes and interesting composition, almost like an avant-garde animation film still, not photorealism. Keep all content beautiful as a cropped widescreen banner. No words, no logo, no watermark.
-
-## Reference photographs
-
-Images downloaded from Unsplash's public image CDN and stored locally for consistent previews. They illustrate layout only and are not represented as film stills.
-
-| Local file | Source |
+| Website asset | Source image in the programme document |
 | --- | --- |
-| `public/images/moon.jpg` | https://images.unsplash.com/photo-1446776811953-b23d57bd21aa |
-| `public/images/flowers.jpg` | https://images.unsplash.com/photo-1497250681960-ef046c08a56e |
-| `public/images/disco.jpg` | https://images.unsplash.com/photo-1514525253161-7a46d19cd819 |
-| `public/images/sea.jpg` | https://images.unsplash.com/photo-1518837695005-2083093ee35b |
-| `public/images/city.jpg` | https://images.unsplash.com/photo-1519608487953-e999c86e7455 |
-| `public/images/night.jpg` | https://images.unsplash.com/photo-1478720568477-152d9b164e26 |
+| `public/images/films/maestro.webp` | `word/media/image1.jpg` |
+| `public/images/films/signal.webp` | `word/media/image2.png` |
+| `public/images/films/la-fee-des-roberts.webp` | `word/media/image5.jpg` |
+| `public/images/films/tuna-tartare.webp` | `word/media/image6.png` |
+| `public/images/films/jeanne-jean-jean.webp` | `word/media/image3.png` |
+| `public/images/films/2-love.webp` | `word/media/image7.png` |
+| `public/images/programme-poster.webp` | `word/media/image4.jpg` |
 
-Google Fonts: Barlow Condensed, Instrument Serif, and DM Sans. Images are displayed in monochrome for the revised art direction. Interface icons: Lucide. Simple stars, eyes, favicon and the stylised France map are native SVG.
+Images are encoded to WebP without crops or creative alterations. Their full original proportions and colours are retained. Wide stills use containment in the programme grid.
 
-## Supplied references
+The primary design reference is the magenta/violet poster shown in chat, with bright yellow condensed serif lettering and artwork from La Fée des Roberts. The embedded secondary poster is a different supplied design and is used in the press/download area.
 
-- `reference/astrid-description.md`
-- `reference/S-NSD - site internet.pptx`
-- https://www.awwwards.com/sites/tyrolean-folk-theater
-- https://www.awwwards.com/sites/festival-les-francouvertes
+`public/images/vivement-lundi.svg` was converted from the supplied `Logo VL blanc.eps` using Ghostscript and pdftocairo, retaining its white/red artwork.
 
-Reference sites informed the general direction; this implementation has its own composition and assets.
+The uploaded `sommes_nous_seules_V3.mp4` exceeds the download tool’s 32 MiB transfer limit and is not included. Private viewing links and passwords are not shipped in the public application.
+
+## Fonts and interface
+
+Chicle, by Miguel Hernandez, provides the rounded, condensed display lettering. DM Sans provides supporting text. Both fonts are self-hosted and licensed under the SIL Open Font License; copies of the licences are in `public/fonts/`.
+
+- https://github.com/google/fonts/tree/main/ofl/chicle
+- https://github.com/google/fonts/tree/main/ofl/dmsans
+
+Icons are from Lucide. The old generated concept image and unrelated stock photos have been replaced by supplied programme artwork.
+
+## Map
+
+`src/geography.ts` uses public-domain Natural Earth 1:50m admin-0 geography: https://github.com/nvkelso/natural-earth-vector/blob/master/geojson/ne_50m_admin_0_countries.geojson.
+
+It includes metropolitan mainland France, Corsica and Île d’Oléron. A spherical Lambert conformal conic projection with standard parallels 44° and 49° positions both the outline and cities. The map stays north-up; interactive targets follow the same coordinates and zoom transformation as visible markers.
