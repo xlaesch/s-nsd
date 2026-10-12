@@ -6,14 +6,15 @@
   font-display: swap;
 }
 :root {
-  --display: "Cooper Black", "CooperBlackStd", "Chicle", Georgia, serif;
-  --secondary: "Scatterplot", Georgia, serif;
+  --display: "cooper-black-std", "Cooper Black", Georgia, serif;
+  --secondary: "scatterplot-vf", Georgia, serif;
   --body: "Inter", Arial, sans-serif;
+  --yellow: #ffed00;
 }
-h1, h2, h3 { font-family: var(--display); font-weight: 400; }
+h1, h2, h3, h4, h5, h6 { font-family: var(--display); font-weight: 400; }
 .page-title > p, .section-heading p, .anthology-line, .film-director,
 .film-production, .programme-meta, .film-video figcaption, .release-date,
-.partner-mark > span, .detail-grid dt { font-family: var(--secondary); }
+.partner-mark > span, .detail-grid dt { font-family: var(--secondary); font-variation-settings: "RAND" 0, "wght" 300; }
 .brand { width: 104px; line-height: 0; letter-spacing: normal; }
 .brand .miyu-logo { display: block; width: 100%; height: auto; object-fit: contain; }
 .footer .brand { width: 170px; }
@@ -57,4 +58,36 @@ h1, h2, h3 { font-family: var(--display); font-weight: 400; }
   .company-profiles { padding-top: 45px; padding-bottom: 50px; }
   .campaign-intro .release-date { font-size: 9px; padding: 8px; }
   .campaign-intro .anthology-line { font-size: 14px; }
+}
+
+/* Fit the supplied Cooper Black's wider letterforms to the poster hierarchy. */
+.campaign-hero .campaign-title { font-size: clamp(60px, 7.8vw, 133.8px); line-height: .95; }
+.campaign-hero h1 > span { line-height: .95; }
+.campaign-hero h1 > span:nth-child(2) { top: 19%; transform: none; }
+.title-mobile-break { display: none; }
+.campaign-hero .campaign-title-en { font-size: clamp(88px, 13vw, 220px); }
+.campaign-hero h1 .musicals-title { font-size: 1em; }
+.header .miyu-logo { filter: drop-shadow(0 1px 4px #26133490); }
+.header-paper .miyu-logo { filter: none; }
+@media (max-width: 800px) {
+  .campaign-hero .campaign-title { font-size: 7.8vw; }
+  .campaign-hero h1 > span:nth-child(2) { top: 16%; font-size: 1.35em; }
+  .campaign-hero .campaign-title-en { font-size: 12.8vw; }
+}
+@media (max-width: 500px) {
+  .campaign-hero .campaign-title { font-size: 7.8vw; bottom: 185px; }
+  .campaign-hero h1 > span:nth-child(2) { font-size: 1.55em; }
+  .campaign-hero h1 > span:nth-child(3) { font-size: 1.3em; }
+  .title-mobile-break { display: block; }
+  .campaign-hero .campaign-title-en { font-size: 12.8vw; bottom: 213px; }
+  .campaign-intro .release-date { left: 22px; top: 38%; }
+  .campaign-intro .anthology-line { bottom: 124px; font-size: 12px; }
+}
+.campaign-hero .campaign-title-en > span:first-child { top: auto; bottom: 0; }
+@media (min-width: 801px) {
+  .campaign-hero .hero-art { overflow: hidden; }
+  .campaign-hero .hero-art img { transform: translateY(90px) scale(1.5); transform-origin: 85% 48%; }
+}
+@media (max-width: 500px) {
+  .not-found h1 { font-size: 12vw; }
 }

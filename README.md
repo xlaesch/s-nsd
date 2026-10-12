@@ -1,6 +1,6 @@
-# Sommes-nous seules dans l’univers ?
+# Sommes-nous seules dans l’univers ? / Musicals!
 
-A bilingual website for Miyu Distribution’s six-film animated musical programme. React, TypeScript and Vite, with supplied film stills, real programme credits, locally hosted fonts and a geographic France map.
+A bilingual website for Miyu Distribution’s six-film animated musical programme, built with React, TypeScript and Vite. The October branding uses supplied MIYU and Vivement Lundi! artwork, the original poster still, Cooper Black titles, Scatterplot secondary text, Inter body text, and seven supplied trailers.
 
 ## Run and build
 
@@ -11,37 +11,33 @@ npm run build
 npm run preview
 ```
 
-Development serves at `http://localhost:5173/`. Production retains the existing GitHub Pages base `/s-nsd/`; preview serves at `http://localhost:4173/s-nsd/`. The build generates entrypoints for every film and the existing routes, including legacy film URLs.
+Development serves at `http://localhost:5173/`. GitHub production and preview retain `/s-nsd/`. `npm run build:sites` uses the separate `vite.sites.config.ts` with base `/` for Sites hosting. Both builds generate entrypoints for all film and page routes, plus legacy routes and the 404 fallback.
 
 ## Email applications
 
-The organiser form sends real applications to **stagiaire.diffusion@miyu.fr** through the free FormSubmit service. It uses its documented AJAX endpoint, a table email template, a contextual subject, the applicant’s email as Reply-To, and a hidden honeypot. The form supports any city, a screening date/time, accessibility, an optional booking URL and a message. It displays pending, confirmation and failure states, retains input on failure, and offers the same address as an email alternative.
+The organiser form emails **stagiaire.diffusion@miyu.fr** through free FormSubmit. It requests organisation, contact email, venue, city, proposed date and an optional message. It uses FormSubmit’s AJAX endpoint, table template, contextual subject, Reply-To and hidden honeypot. It retains input on failure and provides an email alternative. Applications do not automatically publish a screening.
 
-**One-time setup:** the first genuine submission triggers an activation email to the recipient. The recipient must follow FormSubmit’s confirmation link before enquiries are delivered. No test submission or activation request was sent during implementation, as requested. See https://formsubmit.co/ and https://formsubmit.co/documentation.
-
-The service’s acceptance does not establish inbox delivery. This integration has not been tested by submitting a form. Browser checks block the service and never click the submit button.
-
-Applications are sent to the team for review. They do not automatically publish a screening or approve themselves. There is no public simulated approval panel.
+The first genuine submission may trigger FormSubmit’s recipient activation email. The recipient must confirm it for delivery. No form submission, integration test or activation request was made. Browser QA blocks `https://formsubmit.co/**` and never exercises the form. Service acceptance alone does not prove inbox delivery. See [FormSubmit documentation](https://formsubmit.co/documentation).
 
 ## Content and assets
 
-- `src/data.ts`: six actual films, directors, producers, exact runtimes, techniques, short/full bilingual synopses, and demonstration screening records.
-- `src/main.tsx`: presentation pages, navigation, screening filters, map, organiser email form and trailer placement.
-- `src/campaign.css`: shared magenta/yellow/violet campaign styling and Chicle headlines.
-- `src/art-direction.css`: full-bleed poster composition, expressive title placement, staggered open film gallery and responsive portrait framing. Film gallery images retain their original proportions; the hero uses a responsive crop.
-- `src/geography.ts`: public-domain Natural Earth geography projected with Lambert conformal conic. `cities` holds longitude/latitude. Named city lookup corrects positions in older browser-local records.
-- `public/images/films/`: all six supplied stills, encoded to WebP without crops or recolouring.
-- `public/images/programme-poster.webp`: the secondary poster embedded in the programme document, available to download from the press and organiser pages.
-- `public/images/vivement-lundi.svg`: browser-compatible conversion of the supplied EPS partner logo.
-- `public/fonts/`: self-hosted fonts and their licences. No external font requests are needed.
+- `src/data.ts`: bilingual film metadata, each film’s supplied teaser/trailer, the actual programme trailer and demonstration screenings.
+- `src/main.tsx`: pages, transparent navigation, geographic screening filters, native video players and the email form. “La Fée des Roberts” translates to “The Boob Fairy”; the English programme title is “Musicals!”. Company copy preserves “Miyu Distribution”.
+- `src/october-update.css`: latest branding, actual font families, supplied yellow `#ffed00`, company profiles and responsive title composition. Existing campaign title sizes retain the approximately 5% reduction; the homepage lines additionally fit Cooper Black’s wider letterforms.
+- `src/campaign.css` and `src/art-direction.css`: shared campaign layout and responsive gallery; the October stylesheet overrides earlier typography.
+- `public/images/campaign-still.jpg`: supplied original still, copied unchanged. CSS provides responsive framing without filtering, recolouring or editing the source image.
+- `public/images/brand/`: supplied MIYU black and white logos without “distribution”. `public/images/vivement-lundi.svg` is converted from the supplied EPS.
+- `public/videos/`: programme trailer and all six supplied short-film videos, prepared for web playback with audio and fast-start metadata.
+- `design-reference/`: supplied poster PDF, edited French poster, title graphics and Vivement Lundi! EPS. These are references, not downloadable press assets.
+- `src/geography.ts`: Natural Earth France outline projected with Lambert conformal conic; city targets share the visible map’s coordinates and zoom transform.
 
-The primary poster shown in chat guides the design. It differs from the secondary poster embedded in the document. The private full-film screening URLs and passwords from the source document are not included in the website.
+Cooper Black and Scatterplot load actual webfont files through the supplied Adobe kit `https://use.typekit.net/ubh7atw.css`, as specified in the Drive font reference. They are Adobe-hosted rather than redistributed locally. Inter and its OFL licence are local. The Adobe kit owner must retain the kit and its permitted domains; offline visitors receive fallback fonts. See `ASSETS.md` for provenance.
 
-The uploaded MP4 exceeded the environment’s 32 MiB transfer limit. The trailer placement therefore remains unavailable until an accessible video export or hosted trailer URL is supplied. No unrelated video is substituted.
+The press page has no poster, poster download or description below its title. The organiser page has no contact-name, local-time, accessibility or booking-link fields and no poster download. Who Are We includes the two supplied company biographies and logos, without a film image. Private screening URLs/passwords from reference documents are not shipped.
 
 ## Screening data
 
-Screenings are still explicitly marked as demonstrations: no confirmed real venues or booking records were supplied. Language and the pre-existing sample screening state may persist in localStorage. The form does not save applicant contact details to localStorage. Before announcing actual screenings, replace `seedScreenings` with confirmed records or connect a managed source of approved screening data.
+Screenings remain explicitly marked as demonstrations: confirmed venues and booking records were not supplied. Language and existing sample screening state may persist in localStorage; applicant contact details are not saved there. Replace `seedScreenings` with confirmed records before announcing real screenings.
 
 ## Verification
 
@@ -50,12 +46,9 @@ npm test
 npm run test:browser
 ```
 
-Start the development server before running browser checks. Chromium defaults to `/usr/bin/chromium`; set `CHROMIUM_PATH` or `TEST_URL` if needed. Checks cover programme metadata, film routes, FR/EN navigation, the modal, city projection and zoom alignment, map filters, mobile navigation, image loading and overflow at desktop/tablet/mobile sizes. They make zero email-service requests and do not submit or exercise the email form. Screenshots are stored in ignored `.qa/`.
+Start development before browser checks. Chromium defaults to `/usr/bin/chromium`; override `CHROMIUM_PATH` or `TEST_URL` if needed. QA covers actual font loading, video metadata, bilingual navigation and film titles, all page routes, modal focus, city projection/zoom alignment, filters, mobile menu, images and horizontal overflow at 1440/768/390/320px in both languages. The browser uses the inherited HTTPS proxy when present, with local preview bypass only. Screenshots are in ignored `.qa/`. Every browser context blocks FormSubmit; no form submission occurs.
 
-## Existing hosting
+## Hosting
 
-Repository: https://github.com/xlaesch/s-nsd
-
-Site: https://xlaesch.github.io/s-nsd/
-
-The existing Pages workflow deploys `dist/` on pushes to `main`. Local implementation does not itself update that deployment.
+- [GitHub repository](https://github.com/xlaesch/s-nsd) and [GitHub Pages](https://xlaesch.github.io/s-nsd/): the existing workflow deploys `dist/` after pushes to `main` using `npm run build`.
+- [Existing Sites publication](https://sommes-nous-seules-review.ardent-spool-3600.chatgpt.site): project `appgprj_6acbe60df0d08191beafdd9506668876`, preserving its public audience. Its source checkout contains `.openai/hosting.json` with `static.directory: dist`; publication uses `npm run build:sites`. Sites identity and configuration stay separate from GitHub Pages.

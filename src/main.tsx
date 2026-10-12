@@ -390,12 +390,12 @@ function Home() {
           <figcaption>{t(bi("La Fée des Roberts", "The Boob Fairy"))} · Leahn Vivier-Chapas · Folivari</figcaption>
         </figure>
         <div className="campaign-heading">
-          <h1>
+          <h1 className={`campaign-title campaign-title-${lang}`}>
             {lang === "fr" ? (
               <>
                 <span>SOMMES-NOUS</span>
                 <span>SEULES</span>
-                <span>DANS L’UNIVERS ?</span>
+                <span>DANS <br className="title-mobile-break" />L’UNIVERS ?</span>
               </>
             ) : (
               <>

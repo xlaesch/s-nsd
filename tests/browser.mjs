@@ -5,6 +5,7 @@ const browser = await chromium.launch({
   executablePath: process.env.CHROMIUM_PATH || "/usr/bin/chromium",
   headless: true,
   args: ["--no-sandbox"],
+  ...(process.env.HTTPS_PROXY ? { proxy: { server: process.env.HTTPS_PROXY, bypass: "localhost,127.0.0.1" } } : {}),
 });
 const context = await browser.newContext({
   viewport: { width: 1440, height: 1000 },
@@ -34,10 +35,24 @@ try {
   await page.screenshot({ path: ".qa/home-desktop.png", fullPage: true });
   assert.equal(await page.locator("h1").count(), 1);
   assert.match(await page.locator("h1").innerText(), /SEULES/);
+  const loadedFonts = await page.evaluate(async () => {
+    await document.fonts.load('400 48px "cooper-black-std"');
+    await document.fonts.load('300 24px "scatterplot-vf"');
+    return [...document.fonts].filter((font) => font.status === "loaded").map((font) => font.family);
+  });
+  for (const family of ["cooper-black-std", "scatterplot-vf", "Inter"]) assert.ok(loadedFonts.includes(family), `Missing actual font: ${family}`);
   await page
     .getByRole("button", { name: "Bande-annonce", exact: true })
     .click();
   await page.getByRole("dialog").waitFor();
+  const programmeVideo = page.locator("dialog video");
+  await page.waitForFunction(() => {
+    const video = document.querySelector("dialog video");
+    if (video?.error) throw new Error("Programme trailer failed to load");
+    return video?.readyState >= 1;
+  });
+  assert.match(await programmeVideo.locator("source").getAttribute("src"), /programme-trailer\.mp4$/);
+  assert.ok(await programmeVideo.evaluate((video) => video.duration > 60 && video.videoWidth > 0));
   await page.locator("header .brand").focus();
   assert.equal(
     await page
@@ -55,13 +70,13 @@ try {
   );
   await page.getByRole("button", { name: "EN", exact: true }).click();
   assert.equal(await page.locator("html").getAttribute("lang"), "en");
-  assert.match(await page.locator("h1").innerText(), /ARE WE/);
+  assert.match(await page.locator("h1").innerText(), /Musicals!/);
   await page.goto(base + "/programme");
   assert.equal(await page.locator(".film-card").count(), 6);
   assert.deepEqual(await page.locator(".film-card h3").allTextContents(), [
     "Maestro",
     "Signal",
-    "La Fée des Roberts",
+    "The Boob Fairy",
     "Tuna Tartare",
     "Jeanne & Jean Jean",
     "2:LOVE",
@@ -74,6 +89,7 @@ try {
   await page.locator(".film-detail h1").waitFor();
   assert.match(page.url(), /programme\/maestro/);
   assert.equal(await page.locator("h1").innerText(), "Maestro");
+  assert.match(await page.locator("video source").getAttribute("src"), /maestro-teaser\.mp4$/);
   assert.match(
     await page.locator("dl").innerText(),
     /Illogic[\s\S]*Bloom Pictures[\s\S]*1 min 49 sec/,
@@ -88,6 +104,14 @@ try {
     await page.goto(base + "/programme/" + slug);
     assert.equal(await page.locator(".film-detail h1").count(), 1);
     await loadImages();
+    const video = page.locator(".film-video video");
+    assert.equal(await video.count(), 1, `Missing supplied trailer: ${slug}`);
+    await page.waitForFunction(() => {
+      const video = document.querySelector(".film-video video");
+      if (video?.error) throw new Error("Film trailer failed to load");
+      return video?.readyState >= 1;
+    });
+    assert.ok(await video.evaluate((element) => element.duration > 0 && element.videoWidth > 0));
   }
   await page.goto(base + "/seances");
   assert.equal(await page.locator(".screening-row").count(), 6);
@@ -141,36 +165,40 @@ try {
   assert.equal(await page.locator(".map-hit").count(), 0);
   for (const width of [1440, 768, 390, 320]) {
     await page.setViewportSize({ width, height: 900 });
-    for (const path of [
-      "/",
-      "/programme",
-      "/programme/maestro",
-      "/programme/signal",
-      "/programme/la-fee-des-roberts",
-      "/programme/tuna-tartare",
-      "/programme/jeanne-jean-jean",
-      "/programme/2-love",
-      "/seances",
-      "/presse",
-      "/a-propos",
-      "/contact",
-      "/organiser",
-      "/404",
-    ]) {
-      await page.goto(base + path);
-      await loadImages();
-      assert.equal(
-        await page.locator("h1").count(),
-        1,
-        `Heading count on ${path}`,
-      );
-      assert.equal(
-        await page.evaluate(
-          () => document.documentElement.scrollWidth > innerWidth,
-        ),
-        false,
-        `Horizontal overflow on ${path} at ${width}px`,
-      );
+    for (const language of ["fr", "en"]) {
+      for (const path of [
+        "/",
+        "/programme",
+        "/programme/maestro",
+        "/programme/signal",
+        "/programme/la-fee-des-roberts",
+        "/programme/tuna-tartare",
+        "/programme/jeanne-jean-jean",
+        "/programme/2-love",
+        "/seances",
+        "/presse",
+        "/a-propos",
+        "/contact",
+        "/organiser",
+        "/404",
+      ]) {
+        await page.goto(base + path, { waitUntil: "domcontentloaded" });
+        await page.getByRole("button", { name: language.toUpperCase(), exact: true }).click();
+        await loadImages();
+        if (path === "/") await page.screenshot({ path: `.qa/home-${language}-${width}.png` });
+        assert.equal(
+          await page.locator("h1").count(),
+          1,
+          `Heading count on ${path}`,
+        );
+        assert.equal(
+          await page.evaluate(
+            () => document.documentElement.scrollWidth > innerWidth,
+          ),
+          false,
+          `Horizontal overflow on ${path} at ${width}px (${language})`,
+        );
+      }
     }
   }
   await page.setViewportSize({ width: 390, height: 844 });
@@ -195,7 +223,7 @@ try {
   );
   assert.deepEqual(errors, []);
   console.log(
-    "Browser checks passed: bilingual navigation, real film metadata, all film routes, trailer dialog, map geography, zoom alignment, filters, mobile menu, image loading and layouts at 1440/768/390/320px. Email form was not submitted or tested; zero email-service requests.",
+    "Browser checks passed: actual Cooper Black/Scatterplot/Inter fonts, programme and film videos, Musicals! and The Boob Fairy translations, bilingual navigation, film routes, trailer focus, map geography/zoom, filters, mobile menu, images and both-language layouts at 1440/768/390/320px. Email form was not submitted or tested; zero email-service requests.",
   );
 } finally {
   await browser.close();
