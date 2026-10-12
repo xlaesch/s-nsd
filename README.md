@@ -15,7 +15,7 @@ Development serves at `http://localhost:5173/`. GitHub production and preview re
 
 ## Email applications
 
-The organiser form emails **stagiaire.diffusion@miyu.fr** through free FormSubmit. It requests organisation, contact email, venue, city, proposed date and an optional message. It uses FormSubmit’s AJAX endpoint, table template, contextual subject, Reply-To and hidden honeypot. It retains input on failure and provides an email alternative. Applications do not automatically publish a screening.
+The organiser form emails **stagiaire.diffusion@miyu.fr** through free FormSubmit. It requests organisation, contact email, venue, city, one or more proposed dates from 21 December 2026 onward, and an optional message. It uses FormSubmit’s AJAX endpoint, table template, contextual subject, Reply-To and hidden honeypot. It retains input on failure and provides an “email us” mailto alternative. All visible contact links use that label rather than showing the recipient’s address. Multiple dates are validated, deduplicated and included together in the email; the date-rule tests are pure functions and do not interact with the form or service. Applications do not automatically publish a screening.
 
 The first genuine submission may trigger FormSubmit’s recipient activation email. The recipient must confirm it for delivery. No form submission, integration test or activation request was made. Browser QA blocks `https://formsubmit.co/**` and never exercises the form. Service acceptance alone does not prove inbox delivery. See [FormSubmit documentation](https://formsubmit.co/documentation).
 
@@ -23,7 +23,7 @@ The first genuine submission may trigger FormSubmit’s recipient activation ema
 
 - `src/data.ts`: bilingual film metadata, each film’s supplied teaser/trailer, the actual programme trailer and demonstration screenings.
 - `src/main.tsx`: pages, transparent navigation, geographic screening filters, native video players and the email form. “La Fée des Roberts” translates to “The Boob Fairy”; the English programme title is “Musicals!”. Company copy preserves “Miyu Distribution”.
-- `src/miyu-extension.css`: Miyu-inspired uppercase studio navigation, larger supplied logo, black/white page frame, three-column film catalogue and responsive text menu. The poster artwork, campaign colours, Cooper Black and Scatterplot remain.
+- `src/miyu-extension.css`: Miyu-inspired uppercase programme navigation, larger supplied logo, black/white page frame, three-column film catalogue and responsive text menu. The poster artwork, campaign colours, Cooper Black and Scatterplot remain.
 - `src/october-update.css`: campaign branding, actual font families, supplied yellow `#ffed00`, company profiles and responsive title composition. Existing campaign title sizes retain the approximately 5% reduction; the homepage lines additionally fit Cooper Black’s wider letterforms.
 - `src/campaign.css` and `src/art-direction.css`: shared campaign layout and responsive gallery; the October stylesheet overrides earlier typography.
 - `public/images/campaign-still.jpg`: supplied original still, copied unchanged. CSS provides responsive framing without filtering, recolouring or editing the source image.
@@ -34,7 +34,7 @@ The first genuine submission may trigger FormSubmit’s recipient activation ema
 
 Cooper Black and Scatterplot load actual webfont files through the supplied Adobe kit `https://use.typekit.net/ubh7atw.css`, as specified in the Drive font reference. They are Adobe-hosted rather than redistributed locally. Inter and its OFL licence are local. The Adobe kit owner must retain the kit and its permitted domains; offline visitors receive fallback fonts. See `ASSETS.md` for provenance.
 
-The press page has no poster, poster download or description below its title. The organiser page has no contact-name, local-time, accessibility or booking-link fields and no poster download. Who Are We includes the two supplied company biographies and logos, without a film image. Private screening URLs/passwords from reference documents are not shipped.
+Video players have no visible captions below them; the programme modal retains an accessible name. The header has no gallery/distribution/production links beside its logo. The press page has no poster, poster download or description below its title. The organiser page has no contact-name, local-time, accessibility or booking-link fields and no poster download or film image. Who Are We includes the two supplied company biographies and logos, with links to both company websites and without a film image. Its French title keeps the question mark with the last word. Private screening URLs/passwords from reference documents are not shipped.
 
 ## Screening data
 

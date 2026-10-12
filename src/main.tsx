@@ -44,6 +44,7 @@ import {
   type Screening,
 } from "./data";
 import { STORAGE_KEY, validBooking } from "./demo.mjs";
+import { SCREENING_START_DATE, normalizeScreeningDates } from "./screening-dates.mjs";
 import "./styles.css";
 import "./campaign.css";
 import "./art-direction.css";
@@ -61,6 +62,10 @@ type AppContext = {
 };
 const Context = createContext<AppContext>(null!);
 const useApp = () => useContext(Context);
+const ORGANISER_EMAIL = "stagiaire.diffusion@miyu.fr";
+function EmailLink({ className = "text-link", size = 18 }: { className?: string; size?: number }) {
+  return <a className={`${className} email-link`} href={`mailto:${ORGANISER_EMAIL}`}>email us<ArrowUpRight size={size} aria-hidden="true" /></a>;
+}
 const initial = (): DemoState => ({
   applications: [],
   screenings: seedScreenings,
@@ -267,7 +272,6 @@ function FilmVideo({ src, poster, title }: { src: string; poster: string; title:
         <source src={src} type="video/mp4" />
         <a href={src}>{title}</a>
       </video>
-      <figcaption>{title}</figcaption>
     </figure>
   );
 }
@@ -305,11 +309,6 @@ function Header({ changeLanguage }: { changeLanguage: (lang: Lang) => void }) {
         >
           <MiyuLogo light={onPoster} />
         </Link>
-        <nav className="studio-hub" aria-label={t(bi("Les sites Miyu", "Miyu websites"))}>
-          <a href="https://www.miyu.fr/galerie/">Galerie</a>
-          <a className="studio-current" href="https://www.miyu.fr/distribution/">Distribution</a>
-          <a href={lang === "en" ? "https://www.miyu.fr/production/en/home/" : "https://www.miyu.fr/production/"}>Production</a>
-        </nav>
       </div>
       <nav
         className={`main-nav ${open ? "is-open" : ""}`}
@@ -998,7 +997,7 @@ function Press() {
       <section className="section-pad press-content">
         <h2>{t(bi("Parlons du programme", "About the programme"))}</h2>
         <p>{t(bi("Pour un dossier de presse, une interview ou des visuels supplémentaires, contactez Miyu Distribution.", "For a press kit, an interview or additional artwork, contact Miyu Distribution."))}</p>
-        <a className="text-link" href="mailto:stagiaire.diffusion@miyu.fr">stagiaire.diffusion@miyu.fr<ArrowUpRight size={18} /></a>
+        <EmailLink />
       </section>
     </>
   );
@@ -1008,7 +1007,7 @@ function About() {
   const { t } = useApp();
   return (
     <>
-      <PageTitle title={bi("Qui sommes-nous ?", "Who are we?")} />
+      <PageTitle title={bi("Qui sommes-nous\u00a0?", "Who are we?")} />
       <section className="section-pad company-profiles">
         <article className="company-profile">
           <div className="company-logo"><MiyuLogo /></div>
@@ -1037,6 +1036,7 @@ function About() {
               "De 2011 à 2024, la société a gagné 2 fois le Cristal au FIFA Annecy, un Grand prix de la compétition nationale au Festival International du court métrage de Clermont-Ferrand, reçu 6 nominations aux César, 4 nominations aux Oscars et a été récompensée 4 fois aux European Film Awards. Les documentaires de Vivement Lundi ! ont reçu 4 Etoiles de la SCAM et un Grand prix de la compétition internationale au Sundance Film Festival.",
               "From 2011 to 2024, the company won two Cristals at the Annecy International Animation Film Festival and a National Competition Grand Prix at the Clermont-Ferrand International Short Film Festival, received six César nominations and four Oscar nominations, and won four European Film Awards. Vivement Lundi !’s documentaries have received four SCAM Stars and a World Cinema Grand Jury Prize at the Sundance Film Festival."
             ))}</p>
+            <a className="text-link" href="https://www.vivement-lundi.com/" target="_blank" rel="noreferrer">vivement-lundi.com<ArrowUpRight size={18} /></a>
           </div>
         </article>
       </section>
@@ -1058,10 +1058,7 @@ function Contact() {
       />
       <section className="section-pad contact-content">
         <h2>Miyu Distribution</h2>
-        <a className="contact-email" href="mailto:stagiaire.diffusion@miyu.fr">
-          stagiaire.diffusion@miyu.fr
-          <ArrowUpRight size={22} />
-        </a>
+        <EmailLink className="contact-email" size={22} />
         <TextLink to="/organiser">
           {t(bi("Organiser une séance", "Host a screening"))}
         </TextLink>
@@ -1070,9 +1067,9 @@ function Contact() {
   );
 }
 
-const ORGANISER_EMAIL = "stagiaire.diffusion@miyu.fr";
 function Organise() {
   const { t } = useApp();
+  const [dates, setDates] = useState<string[]>([""]);
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
@@ -1097,11 +1094,22 @@ function Organise() {
       );
       return;
     }
+    let selectedDates: string[];
+    try {
+      selectedDates = normalizeScreeningDates(data.getAll("Dates").map(String));
+    } catch {
+      setError(t(bi(
+        "Choisissez au moins une date valide à partir du 21 décembre 2026.",
+        "Choose at least one valid date on or after 21 December 2026."
+      )));
+      return;
+    }
     setSubmitting(true);
     setError("");
     const payload = Object.fromEntries(
       [...data.entries()].map(([key, value]) => [key, String(value).trim()]),
     );
+    payload.Dates = selectedDates.join(", ");
     payload._subject = `Demande de projection — ${payload.Organisation} — ${payload.Ville}`;
     payload._replyto = payload.email;
     try {
@@ -1125,12 +1133,13 @@ function Organise() {
         throw new Error("Submission was not confirmed");
       setSent(true);
       form.reset();
+      setDates([""]);
     } catch {
       setError(
         t(
           bi(
-            "L’envoi n’a pas pu être confirmé. Vos informations sont conservées dans le formulaire. Vous pouvez aussi écrire à stagiaire.diffusion@miyu.fr.",
-            "We could not confirm your submission. Your details are still in the form. You can also email stagiaire.diffusion@miyu.fr.",
+            "L’envoi n’a pas pu être confirmé. Vos informations sont conservées dans le formulaire. Vous pouvez aussi nous contacter par email.",
+            "We could not confirm your submission. Your details are still in the form. You can also contact us by email.",
           ),
         ),
       );
@@ -1236,18 +1245,31 @@ function Organise() {
                         autoComplete="address-level2"
                       />
                     </label>
-                    <label>
-                      {t(bi("Date souhaitée *", "Proposed date *"))}
-                      <input
-                        name="Date"
-                        type="date"
-                        required
-                        min={new Date().toLocaleDateString("en-CA")}
-                      />
-                    </label>
-
-
-
+                    <div className="screening-dates full-width" role="group" aria-labelledby="screening-dates-label">
+                      <p id="screening-dates-label">{t(bi("Dates souhaitées *", "Proposed dates *"))}</p>
+                      <p id="screening-dates-hint" className="dates-hint">{t(bi("À partir du 21 décembre 2026. Vous pouvez proposer plusieurs dates.", "From 21 December 2026. You can propose more than one date."))}</p>
+                      {dates.map((date, index) => (
+                        <div className="screening-date-row" key={index}>
+                          <label>
+                            {t(bi(`Date ${index + 1} *`, `Date ${index + 1} *`))}
+                            <input
+                              name="Dates"
+                              type="date"
+                              required
+                              min={SCREENING_START_DATE}
+                              value={date}
+                              aria-describedby="screening-dates-hint"
+                              onChange={(event) => {
+                                const value = event.target.value;
+                                setDates((current) => current.map((date, i) => i === index ? value : date));
+                              }}
+                            />
+                          </label>
+                          {dates.length > 1 && <button type="button" className="remove-date icon-button" aria-label={t(bi(`Retirer la date ${index + 1}`, `Remove date ${index + 1}`))} onClick={() => setDates((current) => current.filter((_, i) => i !== index))}><X size={18} /></button>}
+                        </div>
+                      ))}
+                      <button type="button" className="text-link add-date" onClick={() => setDates((current) => [...current, ""])}><Plus size={18} />{t(bi("Ajouter une date", "Add another date"))}</button>
+                    </div>
                     <label className="full-width">
                       {t(
                         bi(
@@ -1261,6 +1283,7 @@ function Organise() {
                   {error && (
                     <p role="alert" className="error-message">
                       {error}
+                      {" "}<EmailLink className="error-email" />
                     </p>
                   )}
                   <div className="form-bottom">
@@ -1290,10 +1313,6 @@ function Organise() {
             )}
           </div>
           <aside className="organiser-aside">
-            <img
-              src={assetUrl("/images/films/2-love.webp")}
-              alt={t(bi("Image de 2:LOVE", "Still from 2:LOVE"))}
-            />
             <h2>{t(bi("Six films, une heure", "Six films, one hour"))}</h2>
             <p>
               {t(
@@ -1306,7 +1325,7 @@ function Organise() {
 
             <p className="organiser-contact">
               {t(bi("Une question ?", "Any questions?"))}
-              <a href={`mailto:${ORGANISER_EMAIL}`}>{ORGANISER_EMAIL}</a>
+              <EmailLink />
             </p>
           </aside>
         </div>
@@ -1402,7 +1421,7 @@ function TrailerModal({ close }: { close: () => void }) {
       onClick={(e) => {
         if (e.target === e.currentTarget) close();
       }}
-      aria-labelledby="trailer-title"
+      aria-label={t(bi("Bande-annonce du programme", "Programme trailer"))}
     >
       <div className="trailer-modal-content">
         <button
@@ -1413,17 +1432,6 @@ function TrailerModal({ close }: { close: () => void }) {
           <X />
         </button>
         {programmeTrailer && <FilmVideo src={programmeTrailer} poster={assetUrl("/images/campaign-still.jpg")} title={t(bi("Bande-annonce du programme", "Programme trailer"))} />}
-        <div className="trailer-caption">
-          <h2 id="trailer-title">{t(bi("Bande-annonce", "Trailer"))}</h2>
-          {!programmeTrailer && <p>
-            {t(
-              bi(
-                "La vidéo sera disponible ici prochainement.",
-                "The video will be available here soon.",
-              ),
-            )}
-          </p>}
-        </div>
       </div>
     </dialog>
   );
