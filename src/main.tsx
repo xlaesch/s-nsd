@@ -27,13 +27,13 @@ import {
   Minus,
   Check,
   Accessibility,
-  Download,
   CalendarDays,
   RotateCcw,
   ExternalLink,
 } from "lucide-react";
 import {
   anthology,
+  programmeTrailer,
   bi,
   cities,
   films,
@@ -48,6 +48,7 @@ import { STORAGE_KEY, validBooking } from "./demo.mjs";
 import "./styles.css";
 import "./campaign.css";
 import "./art-direction.css";
+import "./october-update.css";
 
 type DemoState = { applications: Application[]; screenings: Screening[] };
 type AppContext = {
@@ -255,6 +256,22 @@ function ScrollReset() {
   }, [pathname]);
   return null;
 }
+function MiyuLogo({ light = true }: { light?: boolean }) {
+  return <img className="miyu-logo" src={assetUrl(light ? "/images/brand/miyu-white.png" : "/images/brand/miyu-black.png")} alt="MIYU" width="3135" height="809" />;
+}
+
+function FilmVideo({ src, poster, title }: { src: string; poster: string; title: string }) {
+  return (
+    <figure className="film-video">
+      <video controls playsInline preload="metadata" poster={poster} aria-label={title}>
+        <source src={src} type="video/mp4" />
+        <a href={src}>{title}</a>
+      </video>
+      <figcaption>{title}</figcaption>
+    </figure>
+  );
+}
+
 function Header({ changeLanguage }: { changeLanguage: (lang: Lang) => void }) {
   const { lang, t } = useApp();
   const [open, setOpen] = useState(false);
@@ -284,7 +301,7 @@ function Header({ changeLanguage }: { changeLanguage: (lang: Lang) => void }) {
         className="brand"
         aria-label={t(bi("Miyu, accueil", "Miyu, home"))}
       >
-        miyu<span className="brand-sub">DISTRIBUTION</span>
+        <MiyuLogo light={!location.pathname.startsWith("/programme/")} />
       </Link>
       <nav
         className={`main-nav ${open ? "is-open" : ""}`}
@@ -359,18 +376,18 @@ function Home() {
       <section className="hero campaign-hero section-pad">
         <figure className="hero-art">
           <img
-            src={assetUrl("/images/films/la-fee-des-roberts.webp")}
+            src={assetUrl("/images/campaign-still.jpg")}
             width="2048"
             height="1152"
             fetchPriority="high"
             alt={t(
               bi(
-                "La Fée des Roberts : une figure rose et blanche sur une scène violette.",
-                "La Fée des Roberts: a pink and white figure on a violet stage.",
+                "La Fée des Roberts : un personnage violet derrière une vitre magenta.",
+                "The Boob Fairy: a violet character looking through a magenta window.",
               ),
             )}
           />
-          <figcaption>La Fée des Roberts · Leahn Vivier-Chapas · Folivari</figcaption>
+          <figcaption>{t(bi("La Fée des Roberts", "The Boob Fairy"))} · Leahn Vivier-Chapas · Folivari</figcaption>
         </figure>
         <div className="campaign-heading">
           <h1>
@@ -382,15 +399,13 @@ function Home() {
               </>
             ) : (
               <>
-                <span>ARE WE</span>
-                <span>ALONE</span>
-                <span>IN THE UNIVERSE?</span>
+                <span className="musicals-title">Musicals!</span>
               </>
             )}
           </h1>
           <div className="campaign-intro">
             <p className="release-date">
-              <span>{t(bi("Au cinéma", "In cinemas"))}</span>
+              <span>{t(bi("Prochainement au cinéma", "Coming to cinemas"))}</span>
               <strong>21</strong>
               <span>{t(bi("décembre", "December"))}</span>
             </p>
@@ -572,13 +587,11 @@ function FilmDetail() {
           {t(bi("Retour au programme", "Back to the programme"))}
         </TextLink>
         <h1>{t(film.title)}</h1>
-        <img
-          className="detail-image"
-          src={film.image}
-          alt={t(
-            bi(`Image du film ${film.title.fr}`, `Still from ${film.title.en}`),
-          )}
-        />
+        {film.trailer ? (
+          <FilmVideo src={film.trailer} poster={film.image} title={t(bi(`Teaser de ${film.title.fr}`, `${film.title.en} teaser`))} />
+        ) : (
+          <img className="detail-image" src={film.image} alt={t(bi(`Image du film ${film.title.fr}`, `Still from ${film.title.en}`))} />
+        )}
         <div className="detail-grid">
           <div>
             <h2>{t(bi("Synopsis", "Synopsis"))}</h2>
@@ -973,52 +986,11 @@ function Press() {
   const { t } = useApp();
   return (
     <>
-      <PageTitle
-        title={bi("Presse", "Press")}
-        description={bi(
-          "Les visuels du programme et le contact de l’équipe.",
-          "Programme artwork and the team’s contact details.",
-        )}
-      />
+      <PageTitle title={bi("Presse", "Press")} />
       <section className="section-pad press-content">
-        <div className="press-assets">
-          <a
-            href={assetUrl("/images/programme-poster.webp")}
-            download="sommes-nous-seules-affiche.webp"
-            className="poster-download"
-          >
-            <img
-              src={assetUrl("/images/programme-poster.webp")}
-              width="1448"
-              height="2048"
-              alt={t(
-                bi(
-                  "Affiche du programme : un personnage rose sur fond corail.",
-                  "Programme poster: a pink character on a coral background.",
-                ),
-              )}
-            />
-            <span>
-              {t(bi("Télécharger l’affiche", "Download the poster"))}
-              <Download size={18} />
-            </span>
-          </a>
-          <div>
-            <h2>{t(bi("Parlons du programme", "About the programme"))}</h2>
-            <p>
-              {t(
-                bi(
-                  "Pour un dossier de presse, une interview ou des visuels supplémentaires, contactez Miyu Distribution.",
-                  "For a press kit, an interview or additional artwork, contact Miyu Distribution.",
-                ),
-              )}
-            </p>
-            <a className="text-link" href="mailto:stagiaire.diffusion@miyu.fr">
-              stagiaire.diffusion@miyu.fr
-              <ArrowUpRight size={18} />
-            </a>
-          </div>
-        </div>
+        <h2>{t(bi("Parlons du programme", "About the programme"))}</h2>
+        <p>{t(bi("Pour un dossier de presse, une interview ou des visuels supplémentaires, contactez Miyu Distribution.", "For a press kit, an interview or additional artwork, contact Miyu Distribution."))}</p>
+        <a className="text-link" href="mailto:stagiaire.diffusion@miyu.fr">stagiaire.diffusion@miyu.fr<ArrowUpRight size={18} /></a>
       </section>
     </>
   );
@@ -1028,46 +1000,37 @@ function About() {
   const { t } = useApp();
   return (
     <>
-      <PageTitle title={bi("Miyu Distribution", "Miyu Distribution")} />
-      <section className="section-pad about-grid">
-        <img
-          className="about-visual"
-          src={assetUrl("/images/films/signal.webp")}
-          alt={t(
-            bi(
-              "Image de Signal, un film en stop motion.",
-              "Still from Signal, a stop-motion film.",
-            ),
-          )}
-        />
-        <div>
-          <h2>{t(bi("Le cinéma d’animation", "Animated cinema"))}</h2>
-          <p className="large-copy">
-            {t(
-              bi(
-                "Né de l’association entre Luce Grosjean et Miyu Productions en 2017, Miyu Distribution est spécialisé dans les ventes internationales et la diffusion de films d’animation.",
-                "Founded by Luce Grosjean and Miyu Productions in 2017, Miyu Distribution specialises in international sales and the distribution of animated films.",
-              ),
-            )}
-          </p>
-          <p>
-            {t(
-              bi(
-                "Sommes-nous seules dans l’univers ? réunit six courts métrages de comédie musicale, en partenariat avec Vivement Lundi ! et son film Signal.",
-                "Are we alone in the universe? brings together six animated musical shorts, in partnership with Vivement Lundi ! and its film Signal.",
-              ),
-            )}
-          </p>
-          <a
-            className="text-link"
-            href="https://www.miyu.fr/distribution/"
-            target="_blank"
-            rel="noreferrer"
-          >
-            miyu.fr
-            <ArrowUpRight size={18} />
-          </a>
-        </div>
+      <PageTitle title={bi("Qui sommes-nous ?", "Who are we?")} />
+      <section className="section-pad company-profiles">
+        <article className="company-profile">
+          <div className="company-logo"><MiyuLogo /></div>
+          <div>
+            <h2>Miyu Distribution</h2>
+            <p>{t(bi(
+              "Né de l’association entre Luce Grosjean et Miyu Productions en 2017, Miyu Distribution est spécialisé dans les ventes internationales et la diffusion de films d’animation. La société distribue un large catalogue de courts métrages de sociétés de production et de réalisateur.ice.s indépendant.e.s, ainsi que les films de fin d’études de grandes écoles d’animation.",
+              "Founded through the partnership between Luce Grosjean and Miyu Productions in 2017, Miyu Distribution specialises in international sales and the distribution of animated films. The company distributes a broad catalogue of short films from production companies and independent filmmakers, as well as graduation films from leading animation schools."
+            ))}</p>
+            <p>{t(bi(
+              "Avec 10 nominations aux Oscars, 2 victoires aux César – Eté 96 de Mathilde Bédouet (2024) et Beurk ! de Loïc Espuche (2025) -, une Palme d’or et un Cristal du court-métrage pour 27 de Flora Anna Buda (2023) ainsi que deux prix de la meilleure société de distribution remis par UniFrance et la Fête du court-métrage (2021, 2024), Miyu Distribution s’impose comme le leader de son secteur.",
+              "With 10 Oscar nominations, two César wins—Summer 96 by Mathilde Bédouet (2024) and Yuck! by Loïc Espuche (2025)—a Palme d’Or and a Cristal for Best Short Film for 27 by Flora Anna Buda (2023), and two Best Distribution Company awards from UniFrance and La Fête du court-métrage (2021, 2024), Miyu Distribution has established itself as a leader in its field."
+            ))}</p>
+            <a className="text-link" href="https://www.miyu.fr/distribution/" target="_blank" rel="noreferrer">miyu.fr<ArrowUpRight size={18} /></a>
+          </div>
+        </article>
+        <article className="company-profile">
+          <div className="company-logo"><img src={assetUrl("/images/vivement-lundi.svg")} alt="Vivement Lundi !" width="605" height="197" /></div>
+          <div>
+            <h2>Vivement Lundi !</h2>
+            <p>{t(bi(
+              "Depuis sa création à Rennes en 1998, Vivement Lundi ! alterne production de documentaires et de films et séries en animation. Les productions de la société cumulent plus de 600 distinctions dans des festivals nationaux et internationaux.",
+              "Since its creation in Rennes in 1998, Vivement Lundi ! has alternated between producing documentaries and animated films and series. The company’s productions have received more than 600 awards at national and international festivals."
+            ))}</p>
+            <p>{t(bi(
+              "De 2011 à 2024, la société a gagné 2 fois le Cristal au FIFA Annecy, un Grand prix de la compétition nationale au Festival International du court métrage de Clermont-Ferrand, reçu 6 nominations aux César, 4 nominations aux Oscars et a été récompensée 4 fois aux European Film Awards. Les documentaires de Vivement Lundi ! ont reçu 4 Etoiles de la SCAM et un Grand prix de la compétition internationale au Sundance Film Festival.",
+              "From 2011 to 2024, the company won two Cristals at the Annecy International Animation Film Festival and a National Competition Grand Prix at the Clermont-Ferrand International Short Film Festival, received six César nominations and four Oscar nominations, and won four European Film Awards. Vivement Lundi !’s documentaries have received four SCAM Stars and a World Cinema Grand Jury Prize at the Sundance Film Festival."
+            ))}</p>
+          </div>
+        </article>
       </section>
       <SmallCTA host />
     </>
@@ -1111,20 +1074,8 @@ function Organise() {
     const form = event.currentTarget;
     const data = new FormData(form);
     if (data.get("_honey")) return;
-    const booking = String(data.get("Billetterie") || "").trim();
-    if (!validBooking(booking)) {
-      setError(
-        t(
-          bi(
-            "Le lien de billetterie doit commencer par https:// ou http://.",
-            "The booking link must start with https:// or http://.",
-          ),
-        ),
-      );
-      return;
-    }
     if (
-      ["Organisation", "name", "Lieu", "Ville"].some(
+      ["Organisation", "Lieu", "Ville"].some(
         (key) => !String(data.get(key) || "").trim(),
       )
     ) {
@@ -1253,15 +1204,7 @@ function Organise() {
                         )}
                       />
                     </label>
-                    <label>
-                      {t(bi("Votre nom *", "Your name *"))}
-                      <input
-                        name="name"
-                        required
-                        maxLength={100}
-                        autoComplete="name"
-                      />
-                    </label>
+                    
                     <label>
                       {t(bi("Email de contact *", "Contact email *"))}
                       <input
@@ -1294,40 +1237,9 @@ function Organise() {
                         min={new Date().toLocaleDateString("en-CA")}
                       />
                     </label>
-                    <label>
-                      {t(bi("Horaire local *", "Local time *"))}
-                      <input
-                        name="Horaire"
-                        type="time"
-                        required
-                        defaultValue="20:00"
-                      />
-                    </label>
-                    <label>
-                      {t(bi("Accessibilité", "Accessibility"))}
-                      <select name="Accessibilité" defaultValue="À confirmer">
-                        <option value="À confirmer">
-                          {t(bi("À confirmer", "To be confirmed"))}
-                        </option>
-                        <option value="Accès sans marche">
-                          {t(bi("Accès sans marche", "Step-free access"))}
-                        </option>
-                      </select>
-                    </label>
-                    <label className="full-width">
-                      {t(
-                        bi(
-                          "Lien de billetterie (facultatif)",
-                          "Booking link (optional)",
-                        ),
-                      )}
-                      <input
-                        name="Billetterie"
-                        type="url"
-                        maxLength={2000}
-                        placeholder="https://…"
-                      />
-                    </label>
+                    
+                    
+                    
                     <label className="full-width">
                       {t(
                         bi(
@@ -1383,14 +1295,7 @@ function Organise() {
                 ),
               )}
             </p>
-            <a
-              className="text-link"
-              href={assetUrl("/images/programme-poster.webp")}
-              download="sommes-nous-seules-affiche.webp"
-            >
-              {t(bi("Télécharger l’affiche", "Download the poster"))}
-              <Download size={18} />
-            </a>
+            
             <p className="organiser-contact">
               {t(bi("Une question ?", "Any questions?"))}
               <a href={`mailto:${ORGANISER_EMAIL}`}>{ORGANISER_EMAIL}</a>
@@ -1441,7 +1346,7 @@ function Footer() {
     <footer className="footer section-pad">
       <div className="footer-partners">
         <Link to="/a-propos" className="brand">
-          miyu<span className="brand-sub">DISTRIBUTION</span>
+          <MiyuLogo />
         </Link>
         <div className="partner-mark">
           <span>{t(bi("En partenariat avec", "In partnership with"))}</span>
@@ -1499,21 +1404,17 @@ function TrailerModal({ close }: { close: () => void }) {
         >
           <X />
         </button>
-        <img
-          className="trailer-cover"
-          src={assetUrl("/images/films/tuna-tartare.webp")}
-          alt={t(bi("Image de Tuna Tartare", "Still from Tuna Tartare"))}
-        />
+        {programmeTrailer && <FilmVideo src={programmeTrailer} poster={assetUrl("/images/campaign-still.jpg")} title={t(bi("Bande-annonce du programme", "Programme trailer"))} />}
         <div className="trailer-caption">
           <h2 id="trailer-title">{t(bi("Bande-annonce", "Trailer"))}</h2>
-          <p>
+          {!programmeTrailer && <p>
             {t(
               bi(
                 "La vidéo sera disponible ici prochainement.",
                 "The video will be available here soon.",
               ),
             )}
-          </p>
+          </p>}
         </div>
       </div>
     </dialog>

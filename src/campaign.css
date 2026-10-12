@@ -39,7 +39,7 @@ h2 {
   line-height: 1;
 }
 h2 {
-  font-size: clamp(42px, 4vw, 64px);
+  font-size: clamp(39.9px, 3.8vw, 60.8px);
 }
 p {
   line-height: 1.6;
@@ -155,7 +155,7 @@ textarea:focus-visible {
   padding-bottom: 40px;
 }
 .campaign-hero h1 {
-  font-size: clamp(65px, 7.8vw, 125px);
+  font-size: clamp(61.75px, 7.41vw, 118.75px);
   line-height: 0.94;
   letter-spacing: 0.015em;
   color: var(--yellow);
@@ -283,7 +283,7 @@ textarea:focus-visible {
 }
 .film-card-title h3 {
   font-family: var(--display);
-  font-size: clamp(27px, 2.3vw, 38px);
+  font-size: clamp(25.65px, 2.185vw, 36.1px);
   font-weight: 400;
   letter-spacing: 0;
   line-height: 1.08;
@@ -323,7 +323,7 @@ textarea:focus-visible {
   justify-content: center;
 }
 .screenings-pitch h2 {
-  font-size: clamp(58px, 6vw, 90px);
+  font-size: clamp(55.1px, 5.7vw, 85.5px);
   margin: 0 0 24px;
   color: var(--yellow);
 }
@@ -392,7 +392,7 @@ textarea:focus-visible {
   gap: 40px;
 }
 .small-cta h2 {
-  font-size: clamp(40px, 4vw, 62px);
+  font-size: clamp(38px, 3.8vw, 58.9px);
 }
 .small-cta p {
   margin-top: 12px;
@@ -409,7 +409,7 @@ textarea:focus-visible {
   padding-bottom: 48px;
 }
 .page-title h1 {
-  font-size: clamp(58px, 6.6vw, 102px);
+  font-size: clamp(55.1px, 6.27vw, 96.9px);
   line-height: 1;
 }
 .page-title > p {
@@ -438,7 +438,7 @@ textarea:focus-visible {
 }
 .film-detail h1 {
   margin: 36px 0 30px;
-  font-size: clamp(64px, 7vw, 108px);
+  font-size: clamp(60.8px, 6.65vw, 102.6px);
   color: var(--magenta);
 }
 .detail-image {
@@ -455,7 +455,7 @@ textarea:focus-visible {
   margin-top: 44px;
 }
 .detail-grid h2 {
-  font-size: 40px;
+  font-size: 38px;
 }
 .detail-grid .large-copy {
   font-size: 19px;
@@ -611,7 +611,7 @@ textarea:focus-visible {
 }
 .organiser-aside h2 {
   margin: 26px 0 16px;
-  font-size: 38px;
+  font-size: 36.1px;
   color: var(--magenta);
 }
 .organiser-aside p {
@@ -636,7 +636,7 @@ fieldset {
   min-width: 0;
 }
 .form-heading h2 {
-  font-size: 42px;
+  font-size: 39.9px;
   margin-bottom: 12px;
   color: var(--magenta);
 }
@@ -767,7 +767,7 @@ fieldset {
   padding: 28px;
 }
 .trailer-caption h2 {
-  font-size: 44px;
+  font-size: 41.8px;
   margin-bottom: 14px;
   color: var(--magenta);
 }
@@ -804,7 +804,7 @@ fieldset {
     gap: 32px;
   }
   .campaign-hero h1 {
-    font-size: 7.6vw;
+    font-size: 7.22vw;
   }
   .campaign-intro p {
     font-size: 15px;
@@ -854,7 +854,7 @@ fieldset {
     padding-bottom: 28px;
   }
   .campaign-hero h1 {
-    font-size: 11.8vw;
+    font-size: 11.21vw;
     line-height: 0.94;
   }
   .campaign-intro {
@@ -881,7 +881,7 @@ fieldset {
     gap: 36px 22px;
   }
   .film-card-title h3 {
-    font-size: 31px;
+    font-size: 29.45px;
   }
   .section-heading {
     flex-direction: column;
@@ -897,7 +897,7 @@ fieldset {
     min-height: auto;
   }
   .screenings-pitch h2 {
-    font-size: 54px;
+    font-size: 51.3px;
   }
   .screenings-pitch p {
     font-size: 15px;
@@ -911,10 +911,10 @@ fieldset {
     gap: 24px;
   }
   .small-cta h2 {
-    font-size: 44px;
+    font-size: 41.8px;
   }
   .page-title h1 {
-    font-size: 64px;
+    font-size: 60.8px;
   }
   .page-title > p {
     font-size: 16px;
@@ -934,7 +934,7 @@ fieldset {
     font-size: 17px;
   }
   .film-detail h1 {
-    font-size: 68px;
+    font-size: 64.6px;
     margin: 28px 0;
   }
   .screenings-layout {
@@ -960,7 +960,7 @@ fieldset {
     gap: 32px;
   }
   .press-assets h2 {
-    font-size: 40px;
+    font-size: 38px;
   }
   .press-assets p {
     font-size: 16px;
@@ -970,7 +970,7 @@ fieldset {
     gap: 30px;
   }
   .about-grid h2 {
-    font-size: 46px;
+    font-size: 43.7px;
   }
   .organiser-layout {
     grid-template-columns: 1fr;
@@ -1041,7 +1041,7 @@ fieldset {
     gap: 36px;
   }
   .film-card-title h3 {
-    font-size: 36px;
+    font-size: 34.2px;
   }
   .film-card > p {
     font-size: 15px;
@@ -1057,7 +1057,7 @@ fieldset {
     padding-bottom: 20px;
   }
   .screenings-pitch h2 {
-    font-size: 66px;
+    font-size: 62.7px;
   }
   .home-map {
     padding: 12px 22px 28px;
@@ -1070,11 +1070,11 @@ fieldset {
     font-size: 15px;
   }
   .page-title h1 {
-    font-size: 58px;
+    font-size: 55.1px;
     overflow-wrap: anywhere;
   }
   .film-detail h1 {
-    font-size: 60px;
+    font-size: 57px;
   }
   .detail-grid dl > div {
     gap: 16px;

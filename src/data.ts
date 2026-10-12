@@ -5,7 +5,7 @@ export type Bilingual = { fr: string; en: string };
 export const bi = (fr: string, en: string): Bilingual => ({ fr, en });
 export const anthology = bi(
   "Sommes-nous seules dans l’univers ?",
-  "Are we alone in the universe?",
+  "Musicals!",
 );
 export const cities = [
   { name: "Paris", longitude: 2.3522, latitude: 48.8566 },
@@ -33,10 +33,12 @@ export interface Film {
   country: Bilingual;
   director: Bilingual;
   producer: Bilingual;
+  trailer?: string;
 }
 export const films: Film[] = [
   {
     id: "maestro",
+    trailer: assetUrl("/videos/maestro-teaser.mp4"),
     title: bi("Maestro", "Maestro"),
     shortSynopsis: bi(
       "Un opéra nocturne, mené par un écureuil.",
@@ -79,14 +81,14 @@ export const films: Film[] = [
   },
   {
     id: "la-fee-des-roberts",
-    title: bi("La Fée des Roberts", "La Fée des Roberts"),
+    title: bi("La Fée des Roberts", "The Boob Fairy"),
     shortSynopsis: bi(
       "Une lionne, une petite fille et leurs rôles à jouer.",
       "A lioness, a little girl and the roles they play.",
     ),
     synopsis: bi(
       "Qui, de la lionne qui danse ou de la petite fille que l’on dresse, tiendra le mieux son rôle ? La Fée des Roberts saura qui est réellement digne d’attention.",
-      "Who will play her part best: the dancing lioness or the little girl being trained? La Fée des Roberts knows who truly deserves attention.",
+      "Who will play her part best: the dancing lioness or the little girl being trained? The Boob Fairy knows who truly deserves attention.",
     ),
     image: assetUrl("/images/films/la-fee-des-roberts.webp"),
     duration: "13:44",
@@ -304,3 +306,6 @@ export const resources = [
     ),
   },
 ];
+
+// The programme trailer is wired here once the remaining supplied media is accessible.
+export const programmeTrailer: string | null = null;
