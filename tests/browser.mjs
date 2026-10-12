@@ -51,7 +51,7 @@ try {
     if (video?.error) throw new Error("Programme trailer failed to load");
     return video?.readyState >= 1;
   });
-  assert.match(await programmeVideo.locator("source").getAttribute("src"), /programme-trailer\.mp4$/);
+  assert.match(await programmeVideo.locator("source").getAttribute("src"), /programme-trailer\.mp4(?:\?|$)/);
   assert.ok(await programmeVideo.evaluate((video) => video.duration > 60 && video.videoWidth > 0));
   await page.locator("header .brand").focus();
   assert.equal(
@@ -89,7 +89,7 @@ try {
   await page.locator(".film-detail h1").waitFor();
   assert.match(page.url(), /programme\/maestro/);
   assert.equal(await page.locator("h1").innerText(), "Maestro");
-  assert.match(await page.locator("video source").getAttribute("src"), /maestro-teaser\.mp4$/);
+  assert.match(await page.locator("video source").getAttribute("src"), /maestro-teaser\.mp4(?:\?|$)/);
   assert.match(
     await page.locator("dl").innerText(),
     /Illogic[\s\S]*Bloom Pictures[\s\S]*1 min 49 sec/,

@@ -21,7 +21,6 @@ import {
   ArrowUpRight,
   Play,
   X,
-  Menu,
   MapPin,
   Plus,
   Minus,
@@ -49,6 +48,7 @@ import "./styles.css";
 import "./campaign.css";
 import "./art-direction.css";
 import "./october-update.css";
+import "./miyu-extension.css";
 
 type DemoState = { applications: Application[]; screenings: Screening[] };
 type AppContext = {
@@ -276,6 +276,7 @@ function Header({ changeLanguage }: { changeLanguage: (lang: Lang) => void }) {
   const { lang, t } = useApp();
   const [open, setOpen] = useState(false);
   const location = useLocation();
+  const onPoster = location.pathname === "/";
   useEffect(() => setOpen(false), [location.pathname]);
   useEffect(() => {
     if (!open) return;
@@ -295,14 +296,21 @@ function Header({ changeLanguage }: { changeLanguage: (lang: Lang) => void }) {
     ["/a-propos", bi("Qui sommes-nous ?", "Who are we?")],
   ] as const;
   return (
-    <header className={`header ${location.pathname.startsWith("/programme/") ? "header-paper" : ""}`}>
-      <Link
-        to="/"
-        className="brand"
-        aria-label={t(bi("Miyu, accueil", "Miyu, home"))}
-      >
-        <MiyuLogo light={!location.pathname.startsWith("/programme/")} />
-      </Link>
+    <header className={`header ${onPoster ? "header-poster" : "header-paper"}`}>
+      <div className="studio-brand">
+        <Link
+          to="/"
+          className="brand"
+          aria-label={t(bi("Miyu, accueil", "Miyu, home"))}
+        >
+          <MiyuLogo light={onPoster} />
+        </Link>
+        <nav className="studio-hub" aria-label={t(bi("Les sites Miyu", "Miyu websites"))}>
+          <a href="https://www.miyu.fr/galerie/">Galerie</a>
+          <a className="studio-current" href="https://www.miyu.fr/distribution/">Distribution</a>
+          <a href={lang === "en" ? "https://www.miyu.fr/production/en/home/" : "https://www.miyu.fr/production/"}>Production</a>
+        </nav>
+      </div>
       <nav
         className={`main-nav ${open ? "is-open" : ""}`}
         aria-label={t(bi("Navigation principale", "Main navigation"))}
@@ -345,7 +353,7 @@ function Header({ changeLanguage }: { changeLanguage: (lang: Lang) => void }) {
           )}
           onClick={() => setOpen(!open)}
         >
-          {open ? <X /> : <Menu />}
+          <span>{t(open ? bi("Fermer", "Close") : bi("Menu", "Menu"))}</span>
         </button>
       </div>
       {open && (
@@ -1346,7 +1354,7 @@ function Footer() {
     <footer className="footer section-pad">
       <div className="footer-partners">
         <Link to="/a-propos" className="brand">
-          <MiyuLogo />
+          <MiyuLogo light={false} />
         </Link>
         <div className="partner-mark">
           <span>{t(bi("En partenariat avec", "In partnership with"))}</span>

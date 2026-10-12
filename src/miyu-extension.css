@@ -1,0 +1,97 @@
+/* Miyu's studio navigation and clean catalogue frame meet the campaign artwork. */
+:root { --paper: #fff; --ink: #161616; --line: #00000026; }
+.header {
+  height: 100px;
+  padding: 12px 18px;
+  align-items: flex-start;
+  gap: 24px;
+  color: #fff;
+  font-family: var(--body);
+}
+.studio-brand { display: flex; align-items: flex-start; gap: 15px; flex: 0 0 auto; }
+.header .brand { width: 190px; margin-top: 1px; }
+.studio-hub { display: flex; flex-direction: column; gap: 1px; line-height: 1.05; }
+.studio-hub a { font-size: 13px; font-weight: 400; text-transform: uppercase; opacity: .7; }
+.studio-hub .studio-current { opacity: 1; }
+.studio-hub a:hover { opacity: 1; text-decoration: underline; text-underline-offset: 3px; }
+.header .main-nav { display: flex; margin-left: auto; margin-top: 2px; gap: clamp(14px, 1.6vw, 26px); }
+.header .main-nav a, .header .organise-link, .header .languages button {
+  font-size: 13px; line-height: 1.2; font-weight: 500; text-transform: uppercase; letter-spacing: 0;
+}
+.header .main-nav a::after { bottom: -4px; height: 1px; background: currentColor; }
+.header-right { margin-top: 2px; gap: 20px; }
+.header .languages { font-size: 12px; }
+.header .languages button[aria-pressed="true"], .header .organise-link { color: inherit; }
+.header .organise-link { display: flex; gap: 8px; padding: 0; }
+.header .organise-link svg { width: 15px; height: 15px; }
+.header-paper, .header-paper .brand, .header-paper .organise-link,
+.header-paper .languages button[aria-pressed="true"] { color: var(--ink); }
+.header-paper .main-nav a::after { background: currentColor; }
+.header .menu-toggle { display: none; width: auto; min-width: 44px; height: 32px; padding: 0; font-size: 14px; text-transform: uppercase; font-weight: 500; }
+.mobile-nav { display: none; }
+.header-poster .studio-hub { text-shadow: 0 1px 5px #261334; }
+.header-poster .menu-toggle { text-shadow: 0 1px 5px #261334; }
+.page-title { background: #fff; color: var(--ink); padding-top: 132px; padding-bottom: 44px; }
+.page-title h1 { color: var(--ink); }
+.page-title > p { color: #555; }
+.film-detail h1 { color: var(--ink); }
+.film-preview { padding-top: 72px; padding-bottom: 80px; }
+.film-preview .section-heading { margin-bottom: 48px; }
+.film-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 56px 24px; }
+.film-card:nth-child(even) { transform: none; }
+.film-index { font-family: var(--body); font-size: 13px; margin-bottom: 12px; }
+.film-card-title h3 { font-size: clamp(28px, 2.45vw, 42px); line-height: 1.08; }
+.film-card-title { padding-top: 14px; }
+.film-card-title svg { width: 20px; height: 20px; }
+.programme-content { padding-bottom: 80px; }
+.programme-meta { border-top: 1px solid var(--line); padding-top: 22px; }
+.text-link, .pill-button, .section-overline, .footer-bottom nav a { text-transform: uppercase; font-weight: 500; }
+.hero-actions .pill-button.primary { font-size: 15px; }
+.hero-actions .trailer-sticker { font-size: 13px; }
+.company-logo { background: #111; }
+.footer { background: #fff; color: var(--ink); border-top: 1px solid var(--line); }
+.footer-partners, .footer-bottom { border-color: var(--line); }
+.footer .partner-mark img { background: #111; padding: 14px; width: 150px; }
+.footer .brand, .footer a, .footer-bottom p, .footer .partner-mark > span { color: var(--ink); }
+.not-found { background: #fff; color: var(--ink); }
+@media (max-width: 1250px) {
+  .header .brand { width: 154px; }
+  .studio-hub a { font-size: 11px; }
+  .header { gap: 18px; }
+  .header .main-nav { gap: 15px; }
+  .header .main-nav a, .header .organise-link { font-size: 11px; }
+  .header-right { gap: 14px; }
+}
+@media (max-width: 1050px) {
+  .header { height: 86px; }
+  .header .main-nav, .header .organise-link { display: none; }
+  .header .menu-toggle { display: flex; }
+  .header-right { margin-left: auto; }
+  .mobile-nav {
+    display: flex; top: 86px; background: #fff; color: var(--ink); border-top: 1px solid var(--line);
+    padding: 20px 24px 28px; box-shadow: 0 20px 28px #00000015;
+  }
+  .mobile-nav a { color: var(--ink); text-transform: uppercase; font-family: var(--body); font-size: 18px; line-height: 1.4; }
+  .film-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 44px 24px; }
+  .film-card-title h3 { font-size: 32px; }
+}
+@media (max-width: 500px) {
+  .header { height: 78px; padding: 13px 14px; gap: 10px; }
+  .header .brand { width: 103px; margin-top: 0; }
+  .studio-brand { gap: 10px; }
+  .studio-hub { gap: 1px; }
+  .studio-hub a { font-size: 9px; }
+  .header-right { gap: 12px; margin-top: 0; }
+  .header .languages, .header .languages button { font-size: 9px; }
+  .header .languages { gap: 5px; }
+  .header .menu-toggle { min-width: 36px; height: 22px; font-size: 11px; }
+  .mobile-nav { top: 78px; }
+  .page-title { padding-top: 118px; padding-bottom: 36px; }
+  .film-grid { grid-template-columns: 1fr; gap: 38px; }
+  .film-card:nth-child(even), .film-card:nth-child(odd) { margin-left: 0; margin-right: 0; }
+  .film-card-title h3 { font-size: 34px; }
+  .film-preview { padding-top: 48px; padding-bottom: 54px; }
+  .hero-actions .pill-button.primary { font-size: 13px; }
+  .hero-actions .trailer-sticker { font-size: 11px; }
+}
+.film-video video:fullscreen { width: 100%; height: 100%; max-height: none; aspect-ratio: auto; object-fit: contain; }

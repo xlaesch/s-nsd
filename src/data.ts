@@ -2,6 +2,7 @@ import { assetUrl } from "./paths";
 import { projectFrance } from "./geography";
 export type Lang = "fr" | "en";
 export type Bilingual = { fr: string; en: string };
+const videoUrl = (filename: string) => `${assetUrl(`/videos/${filename}`)}?v=20261012-full-res`;
 export const bi = (fr: string, en: string): Bilingual => ({ fr, en });
 export const anthology = bi(
   "Sommes-nous seules dans l’univers ?",
@@ -38,7 +39,7 @@ export interface Film {
 export const films: Film[] = [
   {
     id: "maestro",
-    trailer: assetUrl("/videos/maestro-teaser.mp4"),
+    trailer: videoUrl("maestro-teaser.mp4"),
     title: bi("Maestro", "Maestro"),
     shortSynopsis: bi(
       "Un opéra nocturne, mené par un écureuil.",
@@ -57,7 +58,7 @@ export const films: Film[] = [
   },
   {
     id: "signal",
-    trailer: assetUrl("/videos/signal-teaser.mp4"),
+    trailer: videoUrl("signal-teaser.mp4"),
     title: bi("Signal", "Signal"),
     shortSynopsis: bi(
       "À l’écoute de l’espace, loin des autres.",
@@ -82,7 +83,7 @@ export const films: Film[] = [
   },
   {
     id: "la-fee-des-roberts",
-    trailer: assetUrl("/videos/boob-fairy-trailer.mp4"),
+    trailer: videoUrl("boob-fairy-trailer.mp4"),
     title: bi("La Fée des Roberts", "The Boob Fairy"),
     shortSynopsis: bi(
       "Une lionne, une petite fille et leurs rôles à jouer.",
@@ -101,7 +102,7 @@ export const films: Film[] = [
   },
   {
     id: "tuna-tartare",
-    trailer: assetUrl("/videos/tuna-tartare-trailer.mp4"),
+    trailer: videoUrl("tuna-tartare-trailer.mp4"),
     title: bi("Tuna Tartare", "Tuna Tartare"),
     shortSynopsis: bi(
       "Deux laissés-pour-compte prennent le micro.",
@@ -120,7 +121,7 @@ export const films: Film[] = [
   },
   {
     id: "jeanne-jean-jean",
-    trailer: assetUrl("/videos/jeanne-jean-jean-trailer.mp4"),
+    trailer: videoUrl("jeanne-jean-jean-trailer.mp4"),
     title: bi("Jeanne & Jean Jean", "Jeanne & Jean Jean"),
     shortSynopsis: bi(
       "Une virée au magasin, un couple en question.",
@@ -139,7 +140,7 @@ export const films: Film[] = [
   },
   {
     id: "2-love",
-    trailer: assetUrl("/videos/2-love-trailer.mp4"),
+    trailer: videoUrl("2-love-trailer.mp4"),
     title: bi("2:LOVE", "2:LOVE"),
     shortSynopsis: bi(
       "Sur le court, la rivalité devient passion.",
@@ -312,4 +313,4 @@ export const resources = [
   },
 ];
 
-export const programmeTrailer = assetUrl("/videos/programme-trailer.mp4");
+export const programmeTrailer = videoUrl("programme-trailer.mp4");

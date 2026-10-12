@@ -1,6 +1,6 @@
 # Sommes-nous seules dans l’univers ? / Musicals!
 
-A bilingual website for Miyu Distribution’s six-film animated musical programme, built with React, TypeScript and Vite. The October branding uses supplied MIYU and Vivement Lundi! artwork, the original poster still, Cooper Black titles, Scatterplot secondary text, Inter body text, and seven supplied trailers.
+A bilingual website for Miyu Distribution’s six-film animated musical programme, built with React, TypeScript and Vite. The Miyu-style studio header and clean catalogue frame retain the supplied campaign poster, Cooper Black titles, Scatterplot secondary text and Inter body text. All seven supplied teasers/trailers play at their original resolution.
 
 ## Run and build
 
@@ -11,7 +11,7 @@ npm run build
 npm run preview
 ```
 
-Development serves at `http://localhost:5173/`. GitHub production and preview retain `/s-nsd/`. `npm run build:sites` uses the separate `vite.sites.config.ts` with base `/` for Sites hosting. Both builds generate entrypoints for all film and page routes, plus legacy routes and the 404 fallback.
+Development serves at `http://localhost:5173/`. GitHub production and preview retain `/s-nsd/`. The build generates entrypoints for all film and page routes, plus legacy routes and the 404 fallback.
 
 ## Email applications
 
@@ -23,11 +23,12 @@ The first genuine submission may trigger FormSubmit’s recipient activation ema
 
 - `src/data.ts`: bilingual film metadata, each film’s supplied teaser/trailer, the actual programme trailer and demonstration screenings.
 - `src/main.tsx`: pages, transparent navigation, geographic screening filters, native video players and the email form. “La Fée des Roberts” translates to “The Boob Fairy”; the English programme title is “Musicals!”. Company copy preserves “Miyu Distribution”.
-- `src/october-update.css`: latest branding, actual font families, supplied yellow `#ffed00`, company profiles and responsive title composition. Existing campaign title sizes retain the approximately 5% reduction; the homepage lines additionally fit Cooper Black’s wider letterforms.
+- `src/miyu-extension.css`: Miyu-inspired uppercase studio navigation, larger supplied logo, black/white page frame, three-column film catalogue and responsive text menu. The poster artwork, campaign colours, Cooper Black and Scatterplot remain.
+- `src/october-update.css`: campaign branding, actual font families, supplied yellow `#ffed00`, company profiles and responsive title composition. Existing campaign title sizes retain the approximately 5% reduction; the homepage lines additionally fit Cooper Black’s wider letterforms.
 - `src/campaign.css` and `src/art-direction.css`: shared campaign layout and responsive gallery; the October stylesheet overrides earlier typography.
 - `public/images/campaign-still.jpg`: supplied original still, copied unchanged. CSS provides responsive framing without filtering, recolouring or editing the source image.
 - `public/images/brand/`: supplied MIYU black and white logos without “distribution”. `public/images/vivement-lundi.svg` is converted from the supplied EPS.
-- `public/videos/`: programme trailer and all six supplied short-film videos, prepared for web playback with audio and fast-start metadata.
+- `public/videos/`: programme trailer and all six supplied short-film videos, served at the original supplied resolution, with audio and fast-start metadata. Jeanne & Jean Jean remains 3840×2160 (4K); The Boob Fairy remains 2048×1152; 2:LOVE remains 1998×1080. All other supplied clips are 1920×1080.
 - `design-reference/`: supplied poster PDF, edited French poster, title graphics and Vivement Lundi! EPS. These are references, not downloadable press assets.
 - `src/geography.ts`: Natural Earth France outline projected with Lambert conformal conic; city targets share the visible map’s coordinates and zoom transform.
 
@@ -44,11 +45,15 @@ Screenings remain explicitly marked as demonstrations: confirmed venues and book
 ```sh
 npm test
 npm run test:browser
+npm run test:videos
 ```
 
 Start development before browser checks. Chromium defaults to `/usr/bin/chromium`; override `CHROMIUM_PATH` or `TEST_URL` if needed. QA covers actual font loading, video metadata, bilingual navigation and film titles, all page routes, modal focus, city projection/zoom alignment, filters, mobile menu, images and horizontal overflow at 1440/768/390/320px in both languages. The browser uses the inherited HTTPS proxy when present, with local preview bypass only. Screenshots are in ignored `.qa/`. Every browser context blocks FormSubmit; no form submission occurs.
 
+The video check verifies original pixel dimensions, duration, actual playback and seeking on all seven supplied teasers/trailers. Run against the deployed site with `TEST_URL=https://xlaesch.github.io/s-nsd npm run test:videos`. These are promotional videos; complete short films are not included.
+
 ## Hosting
 
 - [GitHub repository](https://github.com/xlaesch/s-nsd) and [GitHub Pages](https://xlaesch.github.io/s-nsd/): the existing workflow deploys `dist/` after pushes to `main` using `npm run build`.
-- [Existing Sites publication](https://sommes-nous-seules-review.ardent-spool-3600.chatgpt.site): project `appgprj_6acbe60df0d08191beafdd9506668876`, preserving its public audience. Its source checkout contains `.openai/hosting.json` with `static.directory: dist`; publication uses `npm run build:sites`. Sites identity and configuration stay separate from GitHub Pages.
+
+GitHub Pages is the production publication. ChatGPT Sites is no longer maintained or deployed by this project.
