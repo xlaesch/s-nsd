@@ -1204,7 +1204,7 @@ function Organise() {
                         )}
                       />
                     </label>
-                    
+
                     <label>
                       {t(bi("Email de contact *", "Contact email *"))}
                       <input
@@ -1237,9 +1237,9 @@ function Organise() {
                         min={new Date().toLocaleDateString("en-CA")}
                       />
                     </label>
-                    
-                    
-                    
+
+
+
                     <label className="full-width">
                       {t(
                         bi(
@@ -1295,7 +1295,7 @@ function Organise() {
                 ),
               )}
             </p>
-            
+
             <p className="organiser-contact">
               {t(bi("Une question ?", "Any questions?"))}
               <a href={`mailto:${ORGANISER_EMAIL}`}>{ORGANISER_EMAIL}</a>
