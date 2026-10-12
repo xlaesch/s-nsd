@@ -18,7 +18,7 @@ October material comes from the user’s [shared Drive folder](https://drive.goo
 | `public/videos/jeanne-jean-jean-trailer.mp4` | `TRAILER_JEANNE_ET_JEANJEAN_ADS_2024.mp4` |
 | `public/videos/2-love-trailer.mp4` | `2LOVE_trailer_V1.mp4` |
 
-The programme uses its own supplied trailer, not the Maestro teaser. Newly integrated videos are encoded as H.264/AAC MP4 at CRF 23, up to 1920px wide, with original proportions, duration, content and audio preserved. Fast-start metadata supports progressive playback; native controls, inline playback and metadata-only preload avoid autoplay.
+The programme uses its own supplied trailer, not the Maestro teaser. Newly integrated videos are encoded as H.264/AAC MP4 at CRF 23 (programme trailer: CRF 25 to fit Sites’ 25 MiB file limit), up to 1920px wide, with original proportions, duration, content and audio preserved. Fast-start metadata supports progressive playback; native controls, inline playback and metadata-only preload avoid autoplay.
 
 `design-reference/20261012_MUSICALS_AFFICHE.pdf` is the latest supplied English poster reference. `design-reference/20261005_MUSICALS_AFFICHE-FR.png` is the supplied edited French poster, copied unchanged; its duplicate Drive copy is identical. Supplied title PNGs and partner EPS are also retained there. The homepage follows their upper/side/lower title hierarchy and portrait artwork framing while using live Cooper Black text. Source artwork is not recoloured or creatively altered.
 
