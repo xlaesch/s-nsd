@@ -50,6 +50,7 @@ import "./campaign.css";
 import "./art-direction.css";
 import "./october-update.css";
 import "./miyu-extension.css";
+import "./banner-update.css";
 
 type DemoState = { applications: Application[]; screenings: Screening[] };
 type AppContext = {
@@ -401,8 +402,8 @@ function Home() {
             {lang === "fr" ? (
               <>
                 <span>SOMMES-NOUS</span>
-                <span>SEULES</span>
-                <span>DANS <br className="title-mobile-break" />L’UNIVERS ?</span>
+                <span>SEULES DANS</span>
+                <span>L’UNIVERS&nbsp;?</span>
               </>
             ) : (
               <>

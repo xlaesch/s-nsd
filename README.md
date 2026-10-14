@@ -1,6 +1,6 @@
 # Sommes-nous seules dans l’univers ? / Musicals!
 
-A bilingual website for Miyu Distribution’s six-film animated musical programme, built with React, TypeScript and Vite. The Miyu-style studio header and clean catalogue frame retain the supplied campaign poster, Cooper Black titles, Scatterplot secondary text and Inter body text. All seven supplied teasers/trailers play at their original resolution.
+A bilingual website for Miyu Distribution’s six-film animated musical programme, built with React, TypeScript and Vite. The Miyu-style programme header and clean catalogue frame retain the supplied campaign poster, Cooper Black titles, Scatterplot secondary text and Inter body text. All seven supplied teasers/trailers play at their original resolution.
 
 ## Run and build
 
@@ -24,6 +24,7 @@ The first genuine submission may trigger FormSubmit’s recipient activation ema
 - `src/data.ts`: bilingual film metadata, each film’s supplied teaser/trailer, the actual programme trailer and demonstration screenings.
 - `src/main.tsx`: pages, transparent navigation, geographic screening filters, native video players and the email form. “La Fée des Roberts” translates to “The Boob Fairy”; the English programme title is “Musicals!”. Company copy preserves “Miyu Distribution”.
 - `src/miyu-extension.css`: Miyu-inspired uppercase programme navigation, larger supplied logo, black/white page frame, three-column film catalogue and responsive text menu. The poster artwork, campaign colours, Cooper Black and Scatterplot remain.
+- `src/banner-update.css`: V4 banner-inspired lower-left title block, a shared margin for logo/title/body text, and responsive framing that keeps the character’s eyes clear. The favicon is a ringed planet in the campaign palette.
 - `src/october-update.css`: campaign branding, actual font families, supplied yellow `#ffed00`, company profiles and responsive title composition. Existing campaign title sizes retain the approximately 5% reduction; the homepage lines additionally fit Cooper Black’s wider letterforms.
 - `src/campaign.css` and `src/art-direction.css`: shared campaign layout and responsive gallery; the October stylesheet overrides earlier typography.
 - `public/images/campaign-still.jpg`: supplied original still, copied unchanged. CSS provides responsive framing without filtering, recolouring or editing the source image.

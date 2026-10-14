@@ -1,1 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="8" fill="#b91c78"/><path d="M22 23c0-14 25-14 25 0 0 9-13 9-13 18" fill="none" stroke="#fff000" stroke-width="7" stroke-linecap="round"/><circle cx="34" cy="52" r="4" fill="#fff000"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <title>Ringed planet</title>
+  <rect width="64" height="64" rx="14" fill="#261334"/>
+  <ellipse cx="32" cy="34" rx="28" ry="10" transform="rotate(-25 32 34)" fill="none" stroke="#ffed00" stroke-width="4"/>
+  <circle cx="32" cy="31" r="16" fill="#b91c78" stroke="#ffed00" stroke-width="2"/>
+  <path d="M28 16a16 16 0 0 0 11 29 17 17 0 0 1-11-29Z" fill="#79518f"/>
+  <path d="M7 43c4 7 23 3 38-5 9-5 14-10 14-15" fill="none" stroke="#ffed00" stroke-width="4" stroke-linecap="round"/>
+  <path d="m51 7 2 5 5 2-5 2-2 5-2-5-5-2 5-2Z" fill="#ffed00"/>
+</svg>

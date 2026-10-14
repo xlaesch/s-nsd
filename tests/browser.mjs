@@ -70,7 +70,7 @@ try {
   );
   await page.getByRole("button", { name: "EN", exact: true }).click();
   assert.equal(await page.locator("html").getAttribute("lang"), "en");
-  assert.match(await page.locator("h1").innerText(), /Musicals!/);
+  assert.match(await page.locator("h1").innerText(), /Musicals!/i);
   await page.goto(base + "/programme");
   assert.equal(await page.locator(".film-card").count(), 6);
   assert.deepEqual(await page.locator(".film-card h3").allTextContents(), [
@@ -185,6 +185,10 @@ try {
         await page.goto(base + path, { waitUntil: "domcontentloaded" });
         await page.getByRole("button", { name: language.toUpperCase(), exact: true }).click();
         await loadImages();
+        assert.doesNotMatch(await page.locator("body").innerText(), /stagiaire\.diffusion/i);
+        for (const label of await page.locator('a[href="mailto:stagiaire.diffusion@miyu.fr"]').allTextContents()) {
+          assert.equal(label, "email us");
+        }
         if (path === "/") await page.screenshot({ path: `.qa/home-${language}-${width}.png` });
         assert.equal(
           await page.locator("h1").count(),

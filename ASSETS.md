@@ -49,3 +49,9 @@ Inter is self-hosted in `public/fonts/Inter.ttf` with `Inter-OFL.txt`. Earlier C
 `src/geography.ts` uses [public-domain Natural Earth 1:50m admin-0 geography](https://github.com/nvkelso/natural-earth-vector/blob/master/geojson/ne_50m_admin_0_countries.geojson).
 
 It includes metropolitan mainland France, Corsica and Île d’Oléron. A spherical Lambert conformal conic projection with standard parallels 44° and 49° positions the outline and cities. The map stays north-up; interactive targets share the visible markers’ coordinates and zoom transform.
+
+## V4 banner composition
+
+The user’s 14 October ZIP supplies the French and English `20261012_MUSICALS_BANNIERE FB` artwork, retained unchanged as `design-reference/20261012_MUSICALS_BANNER-FR.png` and `...-EN.png`. The accompanying unedited still is byte-identical to `public/images/campaign-still.jpg`. The homepage uses that unchanged still with live Cooper Black lettering grouped in the lower-left corner, aligned to the logo and page text. It follows the supplied banner’s title hierarchy while keeping the character’s eyes unobstructed.
+
+`public/favicon.svg` is a ringed planet and star drawn with the campaign’s yellow, magenta and violet palette. All visible team contact links display “email us”; the original recipient remains in the mailto destination and FormSubmit configuration.

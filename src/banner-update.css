@@ -1,0 +1,38 @@
+/* V4 banner: a single lower-left title block with the shared page margin. */
+.header { padding-left: var(--page-pad); padding-right: var(--page-pad); }
+.campaign-hero { height: clamp(680px, 85svh, 960px); }
+.campaign-hero .hero-art img { transform: none; object-position: 58% 45%; }
+.campaign-hero .campaign-title {
+  inset: auto auto 112px var(--page-pad);
+  width: max-content;
+  max-width: calc(100% - 2 * var(--page-pad));
+  height: auto;
+  font-size: clamp(42px, 6vw, 104px);
+  line-height: .98;
+  letter-spacing: -.015em;
+}
+.campaign-hero .campaign-title > span:nth-child(n) {
+  display: block;
+  position: static;
+  inset: auto;
+  font-size: inherit;
+  line-height: inherit;
+  transform: none;
+}
+.campaign-hero .campaign-title-en { font-size: clamp(64px, 8.5vw, 150px); text-transform: uppercase; }
+.campaign-intro .anthology-line { left: var(--page-pad); }
+.campaign-intro .release-date { left: var(--page-pad); top: 120px; }
+@media (max-width: 800px) {
+  .campaign-hero { height: max(800px, 95svh); }
+  .campaign-hero .hero-art img { object-position: 60% 45%; }
+  .campaign-hero .campaign-title { bottom: 175px; font-size: 6.8vw; }
+  .campaign-hero .campaign-title-en { font-size: 11vw; }
+  .campaign-intro .release-date { top: 36%; }
+}
+@media (max-width: 500px) {
+  .campaign-hero { height: max(792px, 100svh); }
+  .campaign-hero .hero-art img { object-position: 60% 45%; }
+  .campaign-hero .campaign-title { bottom: 180px; font-size: 7.6vw; }
+  .campaign-hero .campaign-title-en { font-size: 12.8vw; }
+  .campaign-intro .release-date { top: 38%; }
+}
