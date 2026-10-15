@@ -11,7 +11,7 @@ npm run build
 npm run preview
 ```
 
-Development serves at `http://localhost:5173/`. GitHub production and preview retain `/s-nsd/`. The build generates entrypoints for all film and page routes, plus legacy routes and the 404 fallback.
+Development serves at `http://localhost:5173/`. The default production build and preview retain `/s-nsd/` for GitHub project Pages. The Pages workflow reads the configured site path with `actions/configure-pages` and passes it as `PAGES_BASE_PATH`; the current custom domain, `sommes-nous-seules.miyu.fr`, uses `/`. To preview that configuration locally, use `PAGES_BASE_PATH=/ npm run build` and `PAGES_BASE_PATH=/ npm run preview`. The build generates entrypoints for all film and page routes, plus legacy routes and the 404 fallback.
 
 ## Email applications
 
@@ -55,6 +55,6 @@ The video check verifies original pixel dimensions, duration, one-click playback
 
 ## Hosting
 
-- [GitHub repository](https://github.com/xlaesch/s-nsd) and [GitHub Pages](https://xlaesch.github.io/s-nsd/): the existing workflow deploys `dist/` after pushes to `main` using `npm run build`.
+- [GitHub repository](https://github.com/xlaesch/s-nsd) and [GitHub Pages](https://xlaesch.github.io/s-nsd/): the existing workflow deploys `dist/` after pushes to `main` using `npm run build` and the configured Pages base path. The project URL currently redirects to [sommes-nous-seules.miyu.fr](http://sommes-nous-seules.miyu.fr/).
 
 GitHub Pages is the production publication. ChatGPT Sites is no longer maintained or deployed by this project.
