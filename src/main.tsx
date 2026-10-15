@@ -65,7 +65,8 @@ const Context = createContext<AppContext>(null!);
 const useApp = () => useContext(Context);
 const ORGANISER_EMAIL = "stagiaire.diffusion@miyu.fr";
 function EmailLink({ className = "text-link", size = 18 }: { className?: string; size?: number }) {
-  return <a className={`${className} email-link`} href={`mailto:${ORGANISER_EMAIL}`}>email us<ArrowUpRight size={size} aria-hidden="true" /></a>;
+  const { t } = useApp();
+  return <a className={`${className} email-link`} href={`mailto:${ORGANISER_EMAIL}`}>{t(bi("écrivez-nous", "email us"))}<ArrowUpRight size={size} aria-hidden="true" /></a>;
 }
 const initial = (): DemoState => ({
   applications: [],
@@ -266,13 +267,25 @@ function MiyuLogo({ light = true }: { light?: boolean }) {
   return <img className="miyu-logo" src={assetUrl(light ? "/images/brand/miyu-white.png" : "/images/brand/miyu-black.png")} alt="MIYU" width="3135" height="809" />;
 }
 
-function FilmVideo({ src, poster, title }: { src: string; poster: string; title: string }) {
+function FilmVideo({ src, poster, title, autoPlay = false }: { src: string; poster: string; title: string; autoPlay?: boolean }) {
+  const { t } = useApp();
+  const video = useRef<HTMLVideoElement>(null);
+  const startButton = useRef<HTMLButtonElement>(null);
+  const [started, setStarted] = useState(false);
+  const play = () => { void video.current?.play().catch(() => { /* Keep the play button available if the browser blocks playback. */ }); };
   return (
     <figure className="film-video">
-      <video controls playsInline preload="metadata" poster={poster} aria-label={title}>
+      <video ref={video} controls playsInline autoPlay={autoPlay} preload="metadata" poster={poster} aria-label={title}
+        onPlay={() => {
+          if (document.activeElement === startButton.current) video.current?.focus();
+          setStarted(true);
+        }}>
         <source src={src} type="video/mp4" />
         <a href={src}>{title}</a>
       </video>
+      {!started && <button ref={startButton} className="video-start" onClick={play} aria-label={t(bi(`Lire : ${title}`, `Play: ${title}`))}>
+        <span><Play size={32} fill="currentColor" aria-hidden="true" /></span>
+      </button>}
     </figure>
   );
 }
@@ -305,10 +318,10 @@ function Header({ changeLanguage }: { changeLanguage: (lang: Lang) => void }) {
       <div className="studio-brand">
         <Link
           to="/"
-          className="brand"
-          aria-label={t(bi("Miyu, accueil", "Miyu, home"))}
+          className={`brand${onPoster ? "" : " home-brand"}`}
+          aria-label={t(onPoster ? bi("Miyu, accueil", "Miyu, home") : bi("Sommes-nous seules dans l’univers ? — Accueil", "Are we alone in the universe? — Home"))}
         >
-          <MiyuLogo light={onPoster} />
+          {onPoster ? <MiyuLogo /> : t(bi("Sommes-nous seules dans l’univers\u00a0?", "Are we alone in the universe?"))}
         </Link>
       </div>
       <nav
@@ -504,7 +517,7 @@ function Home() {
 function FilmCard({ film }: { film: Film }) {
   const { t } = useApp();
   return (
-    <Link to={"/programme/" + film.id} className="film-card">
+    <Link to={"/programme/" + film.id} state={{ playTrailer: film.id }} className="film-card">
       <span className="film-index" aria-hidden="true">{String(films.findIndex((item) => item.id === film.id) + 1).padStart(2, "0")}</span>
       <div className="film-image">
         <img
@@ -554,8 +567,8 @@ function Programme() {
       <PageTitle
         title={bi("Le programme", "The programme")}
         description={bi(
-          "Six courts métrages d’animation et de comédie musicale. Au cinéma le 21 décembre.",
-          "Six animated musical shorts. In cinemas on 21 December.",
+          `Six courts métrages, six chansons, zéro bonne raison de ne pas y aller. Pour survivre aux fêtes, au froid, aux films de famille et à la famille elle-même, Miyu Distribution vous invite à passer le jour le plus court en chanson. Depuis l'espace, le futur ou un karaoké post-apocalyptique, "Sommes nous seules dans l'univers ?" vous promet au moins ça : sortir de là avec une chanson en tête.`,
+          "Six short films, six songs, zero good reasons not to go. To survive the holidays, the cold, family movies, and the family itself, Miyu Distribution invites you to spend the shortest day of the year singing. Whether from space, the future, or a post-apocalyptic karaoke bar, “Are We Alone in the Universe?” promises you at least this much: you’ll leave with a song stuck in your head.",
         )}
       />
       <section className="section-pad programme-content">
@@ -578,6 +591,7 @@ function Programme() {
 
 function FilmDetail() {
   const { id } = useParams();
+  const location = useLocation();
   const aliases: Record<string, string> = {
     fleurs: "la-fee-des-roberts",
     minuit: "tuna-tartare",
@@ -596,7 +610,7 @@ function FilmDetail() {
         </TextLink>
         <h1>{t(film.title)}</h1>
         {film.trailer ? (
-          <FilmVideo src={film.trailer} poster={film.image} title={t(bi(`Teaser de ${film.title.fr}`, `${film.title.en} teaser`))} />
+          <FilmVideo key={film.id} src={film.trailer} poster={film.image} title={t(bi(`Teaser de ${film.title.fr}`, `${film.title.en} teaser`))} autoPlay={location.state?.playTrailer === film.id} />
         ) : (
           <img className="detail-image" src={film.image} alt={t(bi(`Image du film ${film.title.fr}`, `Still from ${film.title.en}`))} />
         )}
@@ -1011,7 +1025,7 @@ function About() {
       <PageTitle title={bi("Qui sommes-nous\u00a0?", "Who are we?")} />
       <section className="section-pad company-profiles">
         <article className="company-profile">
-          <div className="company-logo"><MiyuLogo /></div>
+          <div className="company-logo"><MiyuLogo light={false} /></div>
           <div>
             <h2>Miyu Distribution</h2>
             <p>{t(bi(
@@ -1026,7 +1040,7 @@ function About() {
           </div>
         </article>
         <article className="company-profile">
-          <div className="company-logo"><img src={assetUrl("/images/vivement-lundi.svg")} alt="Vivement Lundi !" width="605" height="197" /></div>
+          <div className="company-logo"><img src={assetUrl("/images/vivement-lundi-black.svg")} alt="Vivement Lundi !" width="605" height="196" /></div>
           <div>
             <h2>Vivement Lundi !</h2>
             <p>{t(bi(
@@ -1379,7 +1393,7 @@ function Footer() {
         <div className="partner-mark">
           <span>{t(bi("En partenariat avec", "In partnership with"))}</span>
           <img
-            src={assetUrl("/images/vivement-lundi.svg")}
+            src={assetUrl("/images/vivement-lundi-black.svg")}
             alt="Vivement Lundi !"
             width="605"
             height="197"
@@ -1432,7 +1446,7 @@ function TrailerModal({ close }: { close: () => void }) {
         >
           <X />
         </button>
-        {programmeTrailer && <FilmVideo src={programmeTrailer} poster={assetUrl("/images/campaign-still.jpg")} title={t(bi("Bande-annonce du programme", "Programme trailer"))} />}
+        {programmeTrailer && <FilmVideo src={programmeTrailer} poster={assetUrl("/images/campaign-still.jpg")} title={t(bi("Bande-annonce du programme", "Programme trailer"))} autoPlay />}
       </div>
     </dialog>
   );

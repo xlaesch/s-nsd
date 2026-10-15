@@ -72,6 +72,12 @@ try {
   assert.equal(await page.locator("html").getAttribute("lang"), "en");
   assert.match(await page.locator("h1").innerText(), /Musicals!/i);
   await page.goto(base + "/programme");
+  assert.match(await page.locator(".page-title > p").innerText(), /Six short films, six songs, zero good reasons not to go\.[\s\S]*song stuck in your head\./);
+  assert.equal(await page.locator("header .home-brand").innerText(), "Are we alone in the universe?");
+  await page.locator("header .home-brand").click();
+  await page.locator(".campaign-title").waitFor();
+  assert.match(await page.locator("h1").innerText(), /Musicals!/i);
+  await page.goto(base + "/programme");
   assert.equal(await page.locator(".film-card").count(), 6);
   assert.deepEqual(await page.locator(".film-card h3").allTextContents(), [
     "Maestro",
@@ -187,7 +193,17 @@ try {
         await loadImages();
         assert.doesNotMatch(await page.locator("body").innerText(), /stagiaire\.diffusion/i);
         for (const label of await page.locator('a[href="mailto:stagiaire.diffusion@miyu.fr"]').allTextContents()) {
-          assert.equal(label, "email us");
+          assert.equal(label, language === "fr" ? "écrivez-nous" : "email us");
+        }
+        if (path !== "/") {
+          assert.equal(await page.locator("header .home-brand").textContent(), language === "fr" ? "Sommes-nous seules dans l’univers\u00a0?" : "Are we alone in the universe?");
+          assert.equal(await page.locator("header .brand img").count(), 0);
+        }
+        if (path === "/programme" && language === "fr") assert.match(await page.locator(".page-title > p").innerText(), /Six courts métrages, six chansons, zéro bonne raison de ne pas y aller\.[\s\S]*une chanson en tête\./);
+        if (path === "/a-propos") {
+          assert.deepEqual(await page.locator(".company-logo").evaluateAll(elements => elements.map(element => getComputedStyle(element).backgroundColor)), ["rgba(0, 0, 0, 0)", "rgba(0, 0, 0, 0)"]);
+          assert.match(await page.locator(".company-logo img").nth(0).getAttribute("src"), /miyu-black\.png$/);
+          assert.match(await page.locator(".company-logo img").nth(1).getAttribute("src"), /vivement-lundi-black\.svg$/);
         }
         if (path === "/") await page.screenshot({ path: `.qa/home-${language}-${width}.png` });
         assert.equal(

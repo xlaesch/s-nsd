@@ -14,7 +14,7 @@ const cases = [
 const browser = await chromium.launch({
   executablePath: process.env.CHROMIUM_PATH || "/usr/bin/chromium",
   headless: true,
-  args: ["--no-sandbox"],
+  args: ["--no-sandbox", "--autoplay-policy=document-user-activation-required"],
   ...(process.env.HTTPS_PROXY ? { proxy: { server: process.env.HTTPS_PROXY, bypass: "localhost,127.0.0.1" } } : {}),
 });
 const context = await browser.newContext();
@@ -28,9 +28,10 @@ const errors = [];
 page.on("pageerror", (error) => errors.push(error.message));
 try {
   for (const [slug, filename, width, height, duration] of cases) {
-    const response = await page.goto(base + (slug ? `/programme/${slug}/` : "/"), { waitUntil: "domcontentloaded" });
+    const response = await page.goto(base + (slug ? "/programme/" : "/"), { waitUntil: "domcontentloaded" });
     assert.equal(response.status(), 200, `Page failed: ${slug || "home"}`);
-    if (!slug) await page.getByRole("button", { name: /bande-annonce/i, exact: true }).click();
+    if (slug) await page.locator(`.film-card[href$="/programme/${slug}"]`).click();
+    else await page.getByRole("button", { name: /bande-annonce/i, exact: true }).click();
     const video = page.locator(slug ? ".film-video video" : "dialog video");
     await page.waitForFunction(() => {
       const element = document.querySelector(".film-video video");
@@ -42,8 +43,11 @@ try {
     assert.deepEqual([metadata.width, metadata.height], [width, height], `Resolution changed: ${filename}`);
     assert.ok(Math.abs(metadata.duration - duration) < 0.1, `Duration changed: ${filename}`);
     assert.equal(await video.getAttribute("controls"), "");
-    await video.evaluate(async (element) => { element.muted = true; await element.play(); });
-    await page.waitForFunction(() => document.querySelector(".film-video video").currentTime > 0.25, null, { timeout: 60000 });
+    // A real click must start playback with sound, without a second play command.
+    await page.waitForFunction(() => {
+      const element = document.querySelector(".film-video video");
+      return !element.paused && !element.muted && element.currentTime > 0.25;
+    }, null, { timeout: 60000 });
     await video.evaluate((element) => element.pause());
     for (const fraction of [0.5, 0.95]) {
       await video.evaluate((element, fraction) => { element.currentTime = element.duration * fraction; }, fraction);
@@ -53,7 +57,29 @@ try {
         return !element.seeking && element.readyState >= 2 && Math.abs(element.currentTime - element.duration * fraction) < 0.15;
       }, fraction, { timeout: 60000 });
     }
-    console.log(`${filename}: ${metadata.width}×${metadata.height}, playback and middle/end seeking passed`);
+    console.log(`${filename}: ${metadata.width}×${metadata.height}, one-click playback with sound and middle/end seeking passed`);
+  }
+  for (const mobile of [false, true]) {
+    const directContext = await browser.newContext(mobile ? { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true } : {});
+    await directContext.route("https://formsubmit.co/**", async route => { emailRequests++; await route.abort(); });
+    const directPage = await directContext.newPage();
+    await directPage.goto(base + "/programme/maestro/");
+    await directPage.waitForFunction(() => document.querySelector("video")?.readyState >= 1);
+    assert.ok(await directPage.locator("video").evaluate(element => element.paused));
+    await directPage.getByRole("button", { name: "Lire : Teaser de Maestro", exact: true }).click();
+    await directPage.waitForFunction(() => {
+      const element = document.querySelector("video");
+      return !element.paused && !element.muted && element.currentTime > .25;
+    });
+    assert.equal(await directPage.locator(".video-start").count(), 0);
+    await directPage.goto(base + "/");
+    await directPage.getByRole("button", { name: /bande-annonce/i, exact: true }).click();
+    await directPage.waitForFunction(() => {
+      const element = document.querySelector("dialog video");
+      return element && !element.paused && !element.muted && element.currentTime > .25;
+    });
+    console.log(`${mobile ? "Mobile" : "Desktop"}: direct-page play button and homepage trailer start on the first click`);
+    await directContext.close();
   }
   assert.equal(emailRequests, 0, "No FormSubmit requests may be made");
   assert.deepEqual(errors, []);
