@@ -29,6 +29,7 @@ import {
   CalendarDays,
   RotateCcw,
   ExternalLink,
+  Download,
 } from "lucide-react";
 import {
   anthology,
@@ -36,15 +37,14 @@ import {
   bi,
   cities,
   films,
-  seedScreenings,
-  type Application,
+  confirmedScreenings,
   type Bilingual,
   type Film,
   type Lang,
   type Screening,
 } from "./data";
-import { STORAGE_KEY, validBooking } from "./demo.mjs";
-import { SCREENING_START_DATE, normalizeScreeningDates } from "./screening-dates.mjs";
+import { validBooking } from "./demo.mjs";
+import { normalizeScreeningDates } from "./screening-dates.mjs";
 import "./styles.css";
 import "./campaign.css";
 import "./art-direction.css";
@@ -52,13 +52,10 @@ import "./october-update.css";
 import "./miyu-extension.css";
 import "./banner-update.css";
 
-type DemoState = { applications: Application[]; screenings: Screening[] };
 type AppContext = {
   lang: Lang;
   t: (value: Bilingual) => string;
-  state: DemoState;
-  update: (next: DemoState) => void;
-  storageError: boolean;
+  screenings: Screening[];
   trailer: () => void;
 };
 const Context = createContext<AppContext>(null!);
@@ -67,38 +64,6 @@ const ORGANISER_EMAIL = "stagiaire.diffusion@miyu.fr";
 function EmailLink({ className = "text-link", size = 18 }: { className?: string; size?: number }) {
   const { t } = useApp();
   return <a className={`${className} email-link`} href={`mailto:${ORGANISER_EMAIL}`}>{t(bi("écrivez-nous", "email us"))}<ArrowUpRight size={size} aria-hidden="true" /></a>;
-}
-const initial = (): DemoState => ({
-  applications: [],
-  screenings: seedScreenings,
-});
-function readDemo(): DemoState {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return initial();
-    const value = JSON.parse(raw);
-    if (!Array.isArray(value.applications) || !Array.isArray(value.screenings))
-      return initial();
-    const screenings = value.screenings.filter(
-      (s: Screening) =>
-        typeof s.id === "string" &&
-        typeof s.city === "string" &&
-        typeof s.partnerId === "string" &&
-        /^\d{4}-\d{2}-\d{2}$/.test(s.date) &&
-        Number.isFinite(s.x) &&
-        Number.isFinite(s.y),
-    );
-    const applications = value.applications.filter(
-      (a: Application) =>
-        typeof a.id === "string" &&
-        typeof a.organisation === "string" &&
-        typeof a.email === "string" &&
-        ["pending", "approved"].includes(a.status),
-    );
-    return { screenings, applications };
-  } catch {
-    return initial();
-  }
 }
 function Star({ className = "" }: { className?: string }) {
   return (
@@ -170,22 +135,6 @@ function TextLink({
     </Link>
   );
 }
-function DemoNote({ children }: { children?: React.ReactNode }) {
-  const { t } = useApp();
-  return (
-    <div className="demo-note">
-      <span className="demo-dot" />
-      {children ||
-        t(
-          bi(
-            "Prototype créatif · contenu de démonstration",
-            "Creative prototype · demonstration content",
-          ),
-        )}
-    </div>
-  );
-}
-
 function App() {
   const [lang, setLang] = useState<Lang>(() => {
     try {
@@ -194,18 +143,7 @@ function App() {
       return "fr";
     }
   });
-  const [state, setState] = useState<DemoState>(readDemo);
-  const [storageError, setStorageError] = useState(false);
   const [showTrailer, setShowTrailer] = useState(false);
-  const update = (next: DemoState) => {
-    setState(next);
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-      setStorageError(false);
-    } catch {
-      setStorageError(true);
-    }
-  };
   const changeLanguage = (next: Lang) => {
     setLang(next);
     try {
@@ -224,9 +162,7 @@ function App() {
       value={{
         lang,
         t,
-        state,
-        update,
-        storageError,
+        screenings: confirmedScreenings,
         trailer: () => setShowTrailer(true),
       }}
     >
@@ -275,7 +211,7 @@ function FilmVideo({ src, poster, title, autoPlay = false }: { src: string; post
   const play = () => { void video.current?.play().catch(() => { /* Keep the play button available if the browser blocks playback. */ }); };
   return (
     <figure className="film-video">
-      <video ref={video} controls playsInline autoPlay={autoPlay} preload="metadata" poster={poster} aria-label={title}
+      <video ref={video} className={started ? "has-started" : undefined} controls playsInline autoPlay={autoPlay} preload="metadata" poster={poster} aria-label={title}
         onPlay={() => {
           if (document.activeElement === startButton.current) video.current?.focus();
           setStarted(true);
@@ -391,7 +327,7 @@ function Header({ changeLanguage }: { changeLanguage: (lang: Lang) => void }) {
   );
 }
 function Home() {
-  const { t, lang, trailer, state } = useApp();
+  const { t, lang, trailer } = useApp();
   return (
     <>
       <section className="hero campaign-hero section-pad">
@@ -490,9 +426,6 @@ function Home() {
             {t(bi("Voir les séances", "Find screenings"))}
             <ArrowUpRight size={20} />
           </Link>
-          <DemoNote>
-            {t(bi("Séances de démonstration", "Demonstration screenings"))}
-          </DemoNote>
         </div>
         <Link
           to="/seances"
@@ -502,7 +435,6 @@ function Home() {
           )}
         >
           <FranceMap
-            screenings={state.screenings}
             selected={null}
             onSelect={() => {}}
             preview
@@ -657,28 +589,16 @@ function FilmDetail() {
 }
 
 function FranceMap({
-  screenings,
   selected,
   onSelect,
   preview = false,
 }: {
-  screenings: Screening[];
   selected: string | null;
-  onSelect: (id: string) => void;
+  onSelect: (city: string) => void;
   preview?: boolean;
 }) {
   const { t } = useApp();
   const [zoom, setZoom] = useState(1);
-  const grouped = screenings.filter(
-    (s, i, all) => all.findIndex((a) => a.city === s.city) === i,
-  );
-  // Resolve known cities afresh so persisted demo screenings use corrected geography.
-  const position = (screening: Screening) => {
-    const city = cities.find((city) => city.name === screening.city);
-    return city
-      ? { x: city.x * 4.6, y: city.y * 4.8 }
-      : { x: 45 + screening.x * 3.45, y: 35 + screening.y * 4 };
-  };
   return (
     <div className={`france-map ${preview ? "preview-map" : ""}`}>
       <svg
@@ -686,8 +606,8 @@ function FranceMap({
         role="img"
         aria-label={t(
           bi(
-            "Carte de France métropolitaine. Retrouvez toutes les séances dans la liste associée.",
-            "Map of metropolitan France. All screenings are available in the associated list.",
+            "Carte de France métropolitaine. Choisissez une ville pour retrouver ses prochaines séances.",
+            "Map of metropolitan France. Choose a city to find its upcoming screenings.",
           ),
         )}
       >
@@ -708,26 +628,25 @@ function FranceMap({
         />
         <g transform={`translate(230 240) scale(${zoom}) translate(-230 -240)`}>
           <path className="france-shape" d={FRANCE_OUTLINE} />
-          {grouped.map((s) => (
+          {cities.map((city) => (
             <g
-              key={s.city}
-              transform={`translate(${position(s).x} ${position(s).y})`}
+              key={city.name}
+              transform={`translate(${city.x * 4.6} ${city.y * 4.8})`}
             >
               <circle
                 r={preview ? 6 : 8}
                 className={
-                  selected &&
-                  screenings.find((a) => a.id === selected)?.city === s.city
+                  selected === city.name
                     ? "map-point active"
                     : "map-point"
                 }
               />
               <text
-                y={s.city === "Lille" ? 20 : -15}
+                y={city.name === "Lille" ? 20 : city.name === "Montpellier" ? 40 : -15}
                 textAnchor="middle"
                 className="map-city"
               >
-                {s.city}
+                {city.name}
               </text>
             </g>
           ))}
@@ -752,25 +671,22 @@ function FranceMap({
             </button>
           </div>
           <div className="map-markers" style={{ transform: `scale(${zoom})` }}>
-            {grouped.map((s) => (
+            {cities.map((city) => (
               <button
                 style={{
-                  left: `${(position(s).x / 460) * 100}%`,
-                  top: `${(position(s).y / 480) * 100}%`,
+                  left: `${city.x}%`,
+                  top: `${city.y}%`,
                 }}
-                key={s.city}
+                key={city.name}
                 className="map-hit"
-                onClick={() => onSelect(s.id)}
+                onClick={() => onSelect(city.name)}
                 aria-label={t(
                   bi(
-                    `Voir les séances à ${s.city}`,
-                    `View screenings in ${s.city}`,
+                    `Voir les séances à ${city.name}`,
+                    `View screenings in ${city.name}`,
                   ),
                 )}
-                aria-pressed={
-                  !!selected &&
-                  screenings.find((a) => a.id === selected)?.city === s.city
-                }
+                aria-pressed={selected === city.name}
               />
             ))}
           </div>
@@ -780,12 +696,12 @@ function FranceMap({
   );
 }
 function Screenings() {
-  const { t, lang, state } = useApp();
+  const { t, lang, screenings } = useApp();
   const [city, setCity] = useState("");
   const [after, setAfter] = useState("");
   const [selected, setSelected] = useState<string | null>(null);
   const selectionRef = useRef<HTMLDivElement>(null);
-  const filtered = state.screenings
+  const filtered = screenings
     .filter((s) => (!city || s.city === city) && (!after || s.date >= after))
     .sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
   const current = filtered.find((s) => s.id === selected);
@@ -805,27 +721,19 @@ function Screenings() {
   };
   useEffect(() => {
     if (selected && !filtered.some((s) => s.id === selected)) setSelected(null);
-  }, [city, after, state.screenings]);
+  }, [city, after, screenings]);
   return (
     <>
       <PageTitle
         label={bi("OÙ VOIR LE PROGRAMME", "WHERE TO WATCH")}
         title={bi("Trouver une séance", "Find a screening")}
         description={bi(
-          "Trouvez votre ville. Choisissez votre séance. On s’y retrouve.",
-          "Find your city. Pick your screening. See you there.",
+          "Les prochaines séances seront annoncées ici dès leur confirmation.",
+          "Upcoming screenings will be listed here as they are confirmed.",
         )}
         color="lavender"
       />
       <section className="section-pad screenings-content">
-        <DemoNote>
-          {t(
-            bi(
-              "Séances fictives : aucune réservation réelle. Carte limitée à la France métropolitaine.",
-              "Fictional screenings: no real reservations. Map covers metropolitan France.",
-            ),
-          )}
-        </DemoNote>
         <div className="screening-filters">
           <label>
             {t(bi("Votre ville", "Your city"))}
@@ -837,7 +745,7 @@ function Screenings() {
               <option value="">
                 {t(bi("Toutes les villes", "All cities"))}
               </option>
-              {[...new Set(state.screenings.map((s) => s.city))]
+              {cities.map((city) => city.name)
                 .sort()
                 .map((c) => (
                   <option key={c}>{c}</option>
@@ -870,9 +778,13 @@ function Screenings() {
         <div className="screenings-layout">
           <div className="map-panel">
             <FranceMap
-              screenings={filtered}
-              selected={selected}
-              onSelect={select}
+              selected={city || current?.city || null}
+              onSelect={(name) => {
+                setCity(name);
+                const first = screenings.find((s) => s.city === name && (!after || s.date >= after));
+                if (first) select(first.id);
+                else setSelected(null);
+              }}
             />
             <div className="map-legend">
               <span className="live-dot" />
@@ -896,8 +808,8 @@ function Screenings() {
                 <p>
                   {t(
                     bi(
-                      "Essayez une autre ville ou une autre date.",
-                      "Try another city or date.",
+                      screenings.length ? "Essayez une autre ville ou une autre date." : "Les séances seront ajoutées au fur et à mesure de leur confirmation.",
+                      screenings.length ? "Try another city or date." : "Screenings will be added as they are confirmed.",
                     ),
                   )}
                 </p>
@@ -923,8 +835,7 @@ function Screenings() {
                     <strong>{s.city}</strong>
                     <span>{s.venue}</span>
                     <small>
-                      {s.time.replace(":", "h")} ·{" "}
-                      {t(bi("Séance démo", "Demo screening"))}
+                      {s.time.replace(":", "h")}
                     </small>
                   </span>
                   <ArrowUpRight size={22} />
@@ -961,8 +872,8 @@ function Screenings() {
                   {t(
                     current.accessibility === "step-free"
                       ? bi(
-                          "Accès sans marche (exemple)",
-                          "Step-free access (example)",
+                          "Accès sans marche",
+                          "Step-free access",
                         )
                       : bi(
                           "Accessibilité à confirmer auprès du lieu",
@@ -979,8 +890,8 @@ function Screenings() {
                   >
                     {t(
                       bi(
-                        "Lien fourni par l’organisateur (démo)",
-                        "Organiser-provided link (demo)",
+                        "Réserver une place",
+                        "Book a ticket",
                       ),
                     )}
                     <ExternalLink size={16} />
@@ -989,8 +900,8 @@ function Screenings() {
                   <span className="availability">
                     {t(
                       bi(
-                        "Billetterie à venir · séance de démonstration",
-                        "Tickets coming soon · demonstration screening",
+                        "Billetterie à venir",
+                        "Tickets coming soon",
                       ),
                     )}
                   </span>
@@ -1010,6 +921,21 @@ function Press() {
     <>
       <PageTitle title={bi("Presse", "Press")} />
       <section className="section-pad press-content">
+        <div className="press-downloads">
+          <h2>{t(bi("Les affiches", "Posters"))}</h2>
+          <div className="poster-downloads">
+            {[
+              { language: bi("Affiche française", "French poster"), path: "/downloads/sommes-nous-seules-affiche-fr.png" },
+              { language: bi("Affiche anglaise", "English poster"), path: "/downloads/musicals-poster-en.png" },
+            ].map((poster) => (
+              <a key={poster.path} className="poster-download" href={assetUrl(poster.path)} download>
+                <h3>{t(poster.language)}</h3>
+                <span>PNG · 3508 × 4961 px</span>
+                <span className="text-link">{t(bi("Télécharger", "Download"))}<Download size={20} aria-hidden="true" /></span>
+              </a>
+            ))}
+          </div>
+        </div>
         <h2>{t(bi("Parlons du programme", "About the programme"))}</h2>
         <p>{t(bi("Pour un dossier de presse, une interview ou des visuels supplémentaires, contactez Miyu Distribution.", "For a press kit, an interview or additional artwork, contact Miyu Distribution."))}</p>
         <EmailLink />
@@ -1114,8 +1040,8 @@ function Organise() {
       selectedDates = normalizeScreeningDates(data.getAll("Dates").map(String));
     } catch {
       setError(t(bi(
-        "Choisissez au moins une date valide à partir du 21 décembre 2026.",
-        "Choose at least one valid date on or after 21 December 2026."
+        "Choisissez au moins une date valide.",
+        "Choose at least one valid date."
       )));
       return;
     }
@@ -1262,7 +1188,7 @@ function Organise() {
                     </label>
                     <div className="screening-dates full-width" role="group" aria-labelledby="screening-dates-label">
                       <p id="screening-dates-label">{t(bi("Dates souhaitées *", "Proposed dates *"))}</p>
-                      <p id="screening-dates-hint" className="dates-hint">{t(bi("À partir du 21 décembre 2026. Vous pouvez proposer plusieurs dates.", "From 21 December 2026. You can propose more than one date."))}</p>
+                      <p id="screening-dates-hint" className="dates-hint">{t(bi("Vous pouvez proposer plusieurs dates.", "You can propose more than one date."))}</p>
                       {dates.map((date, index) => (
                         <div className="screening-date-row" key={index}>
                           <label>
@@ -1271,7 +1197,6 @@ function Organise() {
                               name="Dates"
                               type="date"
                               required
-                              min={SCREENING_START_DATE}
                               value={date}
                               aria-describedby="screening-dates-hint"
                               onChange={(event) => {

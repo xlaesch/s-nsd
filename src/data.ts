@@ -124,7 +124,7 @@ export const films: Film[] = [
     trailer: videoUrl("jeanne-jean-jean-trailer.mp4"),
     title: bi("Jeanne & Jean Jean", "Jeanne & Jean Jean"),
     shortSynopsis: bi(
-      "Une virée au magasin, un couple en question.",
+      "Une visite au magasin, un couple en question.",
       "A furniture shop visit puts a couple to the test.",
     ),
     synopsis: bi(
@@ -143,7 +143,7 @@ export const films: Film[] = [
     trailer: videoUrl("2-love-trailer.mp4"),
     title: bi("2:LOVE", "2:LOVE"),
     shortSynopsis: bi(
-      "Sur le court, la rivalité devient passion.",
+      "sur la court, la rivalité devient passion.",
       "On court, rivalry turns into passion.",
     ),
     synopsis: bi(
@@ -172,89 +172,9 @@ export interface Screening {
   booking?: string;
   x: number;
   y: number;
-  sample: boolean;
 }
-const baseDate = new Date();
-baseDate.setDate(baseDate.getDate() + 14);
-const demoDate = (offset: number) => {
-  const d = new Date(baseDate);
-  d.setDate(d.getDate() + offset);
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-};
-export const seedScreenings: Screening[] = [
-  {
-    id: "paris-1",
-    partnerId: "demo-paris",
-    city: "Paris",
-    venue: "Cinéma des étoiles",
-    date: demoDate(0),
-    time: "20:00",
-    accessibility: "step-free",
-    x: 51,
-    y: 30,
-    sample: true,
-  },
-  {
-    id: "lyon-1",
-    partnerId: "demo-lyon",
-    city: "Lyon",
-    venue: "Le Petit Écran",
-    date: demoDate(2),
-    time: "18:30",
-    accessibility: "step-free",
-    x: 68,
-    y: 61,
-    sample: true,
-  },
-  {
-    id: "nantes-1",
-    partnerId: "demo-nantes",
-    city: "Nantes",
-    venue: "Studio imaginaire",
-    date: demoDate(4),
-    time: "19:00",
-    accessibility: "unknown",
-    x: 22,
-    y: 44,
-    sample: true,
-  },
-  {
-    id: "bordeaux-1",
-    partnerId: "demo-bordeaux",
-    city: "Bordeaux",
-    venue: "La Salle bleue",
-    date: demoDate(6),
-    time: "20:30",
-    accessibility: "step-free",
-    x: 29,
-    y: 68,
-    sample: true,
-  },
-  {
-    id: "marseille-1",
-    partnerId: "demo-marseille",
-    city: "Marseille",
-    venue: "Le Grand Bain",
-    date: demoDate(8),
-    time: "18:00",
-    accessibility: "unknown",
-    x: 69,
-    y: 85,
-    sample: true,
-  },
-  {
-    id: "lille-1",
-    partnerId: "demo-lille",
-    city: "Lille",
-    venue: "L’Écran libre",
-    date: demoDate(10),
-    time: "20:00",
-    accessibility: "step-free",
-    x: 57,
-    y: 13,
-    sample: true,
-  },
-];
+// Add bookings here only after their venue, date and time have been confirmed.
+export const confirmedScreenings: Screening[] = [];
 export interface Application {
   id: string;
   organisation: string;

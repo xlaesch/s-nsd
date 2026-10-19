@@ -6,6 +6,8 @@ October material comes from the user’s [shared Drive folder](https://drive.goo
 
 | Website asset | Supplied source |
 | --- | --- |
+| `public/downloads/sommes-nous-seules-affiche-fr.png` | `20261005_MUSICALS_AFFICHE FR (4).png`, copied unchanged from the 19 October upload |
+| `public/downloads/musicals-poster-en.png` | `20261005_MUSICALS_AFFICHE EN (2).png`, copied unchanged from the 19 October upload |
 | `public/images/campaign-still.jpg` | “unedited poster image”, copied unchanged |
 | `public/images/brand/miyu-white.png` | `LogoMiyu_Blanc.png` |
 | `public/images/brand/miyu-black.png` | `LogoMiyu_Transparent (1).png`, copied unchanged from the 15 October upload |
@@ -36,7 +38,7 @@ The programme document supplies all six stills and the original programme metada
 | `public/images/films/2-love.webp` | `word/media/image7.png` |
 | `public/images/programme-poster.webp` | `word/media/image4.jpg`, legacy secondary poster, no longer shown or linked |
 
-Film stills retain their proportions and colours and were encoded without crops. Who Are We uses the supplied French company biographies and English translations. Private film-viewing links/passwords are excluded from the application.
+Stored film stills retain their source dimensions and colours. The programme cards and film-page poster frames use 16:9 CSS framing with `object-fit: cover`; playback switches to `contain` to preserve the supplied video’s complete frame and original resolution. Who Are We uses the supplied French company biographies and English translations. Private film-viewing links/passwords are excluded from the application.
 
 ## Fonts and interface
 
@@ -59,3 +61,7 @@ The user’s 14 October ZIP supplies the French and English `20261012_MUSICALS_B
 ## 15 October interface update
 
 The uploaded ZIP contains only the two logo artworks listed above. The supplied black Vivement Lundi! artwork retains its red mark; it is used in the About page and footer without a background panel. The About-page MIYU logo uses the supplied transparent black PNG. All inner-page headers show the translated programme name as a link to the homepage; MIYU remains in the homepage header. The programme introduction uses the user’s supplied French and English text verbatim.
+
+## 19 October content and screening update
+
+The latest uploaded ZIP contains the French and English poster PNGs listed above, both 3508 × 4961 pixels. Press downloads serve those exact source bytes; no inline poster preview is added. The two requested French programme phrases are updated. Screening data is now the empty `confirmedScreenings` array: all sample dates, venues and times are removed, and legacy localStorage bookings are ignored. All ten map cities remain available, including Rennes. Organisers can propose multiple valid calendar dates without a 21 December cutoff; the former limit and its message are removed. No FormSubmit submission or activation request is made during verification.

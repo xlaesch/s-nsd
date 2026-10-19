@@ -36,6 +36,11 @@
 .film-preview .section-heading { margin-bottom: 48px; }
 .film-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 56px 24px; }
 .film-card:nth-child(even) { transform: none; }
+.film-image, .film-card:nth-child(2) .film-image, .film-card:nth-child(3) .film-image { aspect-ratio: 16 / 9; }
+.film-image img { width: 100%; height: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+.detail-image { width: 100%; height: auto; max-height: none; aspect-ratio: 16 / 9; object-fit: cover; }
+.film-detail .film-video video { height: auto; max-height: none; aspect-ratio: 16 / 9; }
+.film-video video:not(.has-started) { object-fit: cover; }
 .film-index { font-family: var(--body); font-size: 13px; margin-bottom: 12px; }
 .film-card-title h3 { font-size: clamp(28px, 2.45vw, 42px); line-height: 1.08; }
 .film-card-title { padding-top: 14px; }
@@ -46,6 +51,13 @@
 .hero-actions .pill-button.primary { font-size: 15px; }
 .hero-actions .trailer-sticker { font-size: 13px; }
 .company-logo { background: transparent; }
+.press-downloads { width: 100%; margin-bottom: 32px; }
+.poster-downloads { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; max-width: 900px; margin-top: 28px; }
+.poster-download { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; padding: 28px; border: 1px solid var(--line); }
+.poster-download h3 { font-size: 32px; line-height: 1.1; }
+.poster-download > span:not(.text-link) { font-size: 13px; color: #555; }
+.poster-download .text-link { margin-top: auto; font-size: 13px; }
+.poster-download:hover, .poster-download:focus-visible { border-color: var(--magenta); }
 .footer { background: #fff; color: var(--ink); border-top: 1px solid var(--line); }
 .footer-partners, .footer-bottom { border-color: var(--line); }
 .footer .partner-mark img { background: transparent; padding: 0; width: 150px; }
@@ -73,6 +85,12 @@
   .film-card-title h3 { font-size: 32px; }
 }
 @media (max-width: 500px) {
+  .screening-filters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 16px; }
+  .screening-filters > label { width: 100%; min-width: 0; }
+  .screening-filters .text-link { justify-self: start; font-size: 12px; gap: 8px; }
+  .screening-filters .results-count { justify-self: end; margin: 0; padding: 0; }
+  .poster-downloads { grid-template-columns: 1fr; gap: 16px; }
+  .poster-download { padding: 22px; }
   .header { height: 78px; padding: 13px 14px; gap: 10px; }
   .header .brand { width: 103px; margin-top: 0; }
   .header .home-brand { width: 165px; font-size: 16px; }

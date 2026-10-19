@@ -1,15 +1,15 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { SCREENING_START_DATE, normalizeScreeningDates } from "../src/screening-dates.mjs";
+import { normalizeScreeningDates } from "../src/screening-dates.mjs";
 
 // Pure date rules only: no form interaction, submissions or network calls.
-test("screenings include opening day and preserve every distinct proposed date", () => {
-  const dates = ["2027-01-08", SCREENING_START_DATE, "2026-12-28", "2027-01-08"];
-  assert.deepEqual(normalizeScreeningDates(dates), ["2026-12-21", "2026-12-28", "2027-01-08"]);
-  assert.deepEqual(dates, ["2027-01-08", "2026-12-21", "2026-12-28", "2027-01-08"]);
+test("dates before 21 December are allowed and every distinct proposed date is preserved", () => {
+  const dates = ["2027-01-08", "2026-10-19", "2026-12-20", "2027-01-08"];
+  assert.deepEqual(normalizeScreeningDates(dates), ["2026-10-19", "2026-12-20", "2027-01-08"]);
+  assert.deepEqual(dates, ["2027-01-08", "2026-10-19", "2026-12-20", "2027-01-08"]);
 });
-test("dates before opening day and blank selections are rejected", () => {
-  for (const dates of [[], [""], ["2026-12-20"], ["2026-12-21", "2026-12-20"], ["2026-12-21", ""]]) {
+test("at least one valid date is required and blank selections are rejected", () => {
+  for (const dates of [[], [""], ["2026-12-21", ""]]) {
     assert.throws(() => normalizeScreeningDates(dates));
   }
 });

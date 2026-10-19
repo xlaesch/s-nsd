@@ -1,6 +1,7 @@
 import { chromium } from "playwright";
 import assert from "node:assert/strict";
-import { mkdirSync } from "node:fs";
+import { mkdirSync, readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 const browser = await chromium.launch({
   executablePath: process.env.CHROMIUM_PATH || "/usr/bin/chromium",
   headless: true,
@@ -11,6 +12,11 @@ const context = await browser.newContext({
   viewport: { width: 1440, height: 1000 },
   reducedMotion: "reduce",
 });
+// Returning visitors must not see events saved by the previous demonstration.
+await context.addInitScript(() => localStorage.setItem("s-nsd-demo-v1", JSON.stringify({
+  applications: [],
+  screenings: [{ id: "paris-1", partnerId: "demo-paris", city: "Paris", venue: "Cinéma des étoiles", date: "2099-01-01", time: "20:00", x: 51, y: 30, sample: true }],
+})));
 // Never submit or test the live email form. Block its service during all browser checks.
 let emailRequests = 0;
 await context.route("https://formsubmit.co/**", async (route) => {
@@ -120,7 +126,10 @@ try {
     assert.ok(await video.evaluate((element) => element.duration > 0 && element.videoWidth > 0));
   }
   await page.goto(base + "/seances");
-  assert.equal(await page.locator(".screening-row").count(), 6);
+  assert.equal(await page.locator(".screening-row").count(), 0);
+  assert.doesNotMatch(await page.locator("main").innerText(), /fictional|fictives|démonstration|demonstration|Cinéma des étoiles/i);
+  assert.deepEqual(await page.getByLabel("Your city", { exact: true }).locator("option").allTextContents(), ["All cities", "Bordeaux", "Lille", "Lyon", "Marseille", "Montpellier", "Nantes", "Paris", "Rennes", "Strasbourg", "Toulouse"]);
+  assert.equal(await page.locator(".map-hit").count(), 10);
   const projectedCities = await page.locator(".france-map").evaluate((map) => {
     const outline = map.querySelector(".france-shape");
     return [...map.querySelectorAll(".map-point")].map((point) => {
@@ -157,18 +166,29 @@ try {
   await page.getByRole("button", { name: "Zoom out", exact: true }).click();
   await page.getByRole("button", { name: "Zoom out", exact: true }).click();
   await page.getByLabel("Your city", { exact: true }).selectOption("Paris");
-  assert.equal(await page.locator(".screening-row").count(), 1);
+  assert.equal(await page.locator(".screening-row").count(), 0);
   await page
-    .getByRole("button", { name: "View screenings in Paris", exact: true })
+    .getByRole("button", { name: "View screenings in Rennes", exact: true })
     .click();
-  await page.locator(".screening-detail").waitFor();
-  assert.match(
-    await page.locator(".screening-detail").innerText(),
-    /Cinéma des étoiles/,
-  );
+  await page.waitForFunction(() => document.querySelector('.screening-filters select').value === "Rennes");
+  assert.equal(await page.locator(".screening-detail").count(), 0);
+  await page.locator(".empty-state").waitFor();
   await page.getByLabel("From date").fill("2099-01-01");
   await page.locator(".empty-state").waitFor();
-  assert.equal(await page.locator(".map-hit").count(), 0);
+  assert.equal(await page.locator(".map-hit").count(), 10);
+  await page.goto(base + "/presse");
+  assert.equal(await page.locator(".poster-download").count(), 2);
+  for (const [index, filename, checksum] of [
+    [0, "sommes-nous-seules-affiche-fr.png", "f41268dd6842b9c3a7742bad3b0d709c4fd953aa83972d562802bcd26b5844e6"],
+    [1, "musicals-poster-en.png", "40dfc405076adadacf75e34a77192e0a1ef1a87d5c70efe5a83e605b54ed89bc"],
+  ]) {
+    const [download] = await Promise.all([
+      page.waitForEvent("download"),
+      page.locator(".poster-download").nth(index).click(),
+    ]);
+    assert.equal(download.suggestedFilename(), filename);
+    assert.equal(createHash("sha256").update(readFileSync(await download.path())).digest("hex"), checksum);
+  }
   for (const width of [1440, 768, 390, 320]) {
     await page.setViewportSize({ width, height: 900 });
     for (const language of ["fr", "en"]) {
@@ -200,6 +220,12 @@ try {
           assert.equal(await page.locator("header .brand img").count(), 0);
         }
         if (path === "/programme" && language === "fr") assert.match(await page.locator(".page-title > p").innerText(), /Six courts métrages, six chansons, zéro bonne raison de ne pas y aller\.[\s\S]*une chanson en tête\./);
+        if (path === "/programme" && language === "fr") {
+          assert.match(await page.locator("main").innerText(), /Une visite au magasin/);
+          assert.match(await page.locator("main").innerText(), /sur la court/);
+        }
+        const imageRatios = await page.locator(".film-image, .film-detail .film-video video").evaluateAll(elements => elements.map(element => { const rect = element.getBoundingClientRect(); return rect.width / rect.height; }));
+        assert.ok(imageRatios.every(ratio => Math.abs(ratio - 16 / 9) < .01), `Non-16:9 film image on ${path} at ${width}px: ${imageRatios}`);
         if (path === "/a-propos") {
           assert.deepEqual(await page.locator(".company-logo").evaluateAll(elements => elements.map(element => getComputedStyle(element).backgroundColor)), ["rgba(0, 0, 0, 0)", "rgba(0, 0, 0, 0)"]);
           assert.match(await page.locator(".company-logo img").nth(0).getAttribute("src"), /miyu-black\.png$/);
@@ -243,7 +269,7 @@ try {
   );
   assert.deepEqual(errors, []);
   console.log(
-    "Browser checks passed: actual Cooper Black/Scatterplot/Inter fonts, programme and film videos, Musicals! and The Boob Fairy translations, bilingual navigation, film routes, trailer focus, map geography/zoom, filters, mobile menu, images and both-language layouts at 1440/768/390/320px. Email form was not submitted or tested; zero email-service requests.",
+    "Browser checks passed: supplied poster downloads and checksums, empty bookings despite legacy saved data, ten cities including Rennes, map geography/zoom and filters, 16:9 film images, fonts, videos, translations, navigation, modal focus and both-language layouts at 1440/768/390/320px. Email form was not submitted or tested; zero email-service requests.",
   );
 } finally {
   await browser.close();
