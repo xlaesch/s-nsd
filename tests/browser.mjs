@@ -231,6 +231,15 @@ try {
           assert.match(await page.locator(".company-logo img").nth(0).getAttribute("src"), /miyu-black\.png$/);
           assert.match(await page.locator(".company-logo img").nth(1).getAttribute("src"), /vivement-lundi-black\.svg$/);
         }
+        if (path === "/seances" && width === 320 && language === "fr") {
+          await page.locator(".france-map").scrollIntoViewIfNeeded();
+          const names = await page.locator(".map-city").allTextContents();
+          for (let index = 0; index < names.length; index++) {
+            const rect = await page.locator(".map-point").nth(index).boundingBox();
+            await page.mouse.click(rect.x + rect.width / 2, rect.y + rect.height / 2);
+            await page.waitForFunction(name => document.querySelector('.screening-filters select').value === name, names[index]);
+          }
+        }
         if (path === "/") await page.screenshot({ path: `.qa/home-${language}-${width}.png` });
         assert.equal(
           await page.locator("h1").count(),
