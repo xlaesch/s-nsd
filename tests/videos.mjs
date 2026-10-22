@@ -3,7 +3,8 @@ import assert from "node:assert/strict";
 
 const base = (process.env.TEST_URL || "http://localhost:5173").replace(/\/$/, "");
 const cases = [
-  ["", "programme-trailer.mp4", 1920, 1080, 64.75],
+  ["", "programme-trailer-vf.mp4", 1920, 1080, 64.75, "fr"],
+  ["", "programme-trailer-veng.mp4", 1920, 1080, 64.75, "en"],
   ["maestro", "maestro-teaser.mp4", 1920, 1080, 20.308],
   ["signal", "signal-teaser.mp4", 1920, 1080, 55],
   ["la-fee-des-roberts", "boob-fairy-trailer.mp4", 2048, 1152, 59.208],
@@ -27,11 +28,12 @@ const page = await context.newPage();
 const errors = [];
 page.on("pageerror", (error) => errors.push(error.message));
 try {
-  for (const [slug, filename, width, height, duration] of cases) {
+  for (const [slug, filename, width, height, duration, lang = "fr"] of cases) {
     const response = await page.goto(base + (slug ? "/programme/" : "/"), { waitUntil: "domcontentloaded" });
     assert.equal(response.status(), 200, `Page failed: ${slug || "home"}`);
+    await page.getByRole("button", { name: lang.toUpperCase(), exact: true }).click();
     if (slug) await page.locator(`.film-card[href$="/programme/${slug}"]`).click();
-    else await page.getByRole("button", { name: /bande-annonce/i, exact: true }).click();
+    else await page.getByRole("button", { name: lang === "fr" ? "Bande-annonce" : "Watch the trailer", exact: true }).click();
     const video = page.locator(slug ? ".film-video video" : "dialog video");
     await page.waitForFunction(() => {
       const element = document.querySelector(".film-video video");
@@ -73,17 +75,24 @@ try {
     });
     assert.equal(await directPage.locator(".video-start").count(), 0);
     await directPage.goto(base + "/");
-    await directPage.getByRole("button", { name: /bande-annonce/i, exact: true }).click();
-    await directPage.waitForFunction(() => {
-      const element = document.querySelector("dialog video");
-      return element && !element.paused && !element.muted && element.currentTime > .25;
-    });
-    console.log(`${mobile ? "Mobile" : "Desktop"}: direct-page play button and homepage trailer start on the first click`);
+    for (const lang of ["fr", "en", "fr"]) {
+      await directPage.getByRole("button", { name: lang.toUpperCase(), exact: true }).click();
+      await directPage.getByRole("button", { name: lang === "fr" ? "Bande-annonce" : "Watch the trailer", exact: true }).click();
+      await directPage.waitForFunction(() => {
+        const element = document.querySelector("dialog video");
+        return element && !element.paused && !element.muted && element.currentTime > .25;
+      });
+      const expected = lang === "fr" ? "programme-trailer-vf.mp4" : "programme-trailer-veng.mp4";
+      assert.ok(new URL(await directPage.locator("dialog video source").getAttribute("src"), base).pathname.endsWith(`/videos/${expected}`));
+      await directPage.keyboard.press("Escape");
+      await directPage.locator("dialog").waitFor({ state: "detached" });
+    }
+    console.log(`${mobile ? "Mobile" : "Desktop"}: direct-page play button and both language-specific homepage trailers start on the first click`);
     await directContext.close();
   }
   assert.equal(emailRequests, 0, "No FormSubmit requests may be made");
   assert.deepEqual(errors, []);
-  console.log(`All seven original-resolution supplied videos work at ${base}; zero FormSubmit requests.`);
+  console.log(`Both V4 homepage trailers and all six original-resolution film videos work at ${base}; zero FormSubmit requests.`);
 } finally {
   await browser.close();
 }

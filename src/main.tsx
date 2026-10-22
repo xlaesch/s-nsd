@@ -33,7 +33,7 @@ import {
 } from "lucide-react";
 import {
   anthology,
-  programmeTrailer,
+  programmeTrailers,
   bi,
   cities,
   films,
@@ -1339,7 +1339,7 @@ function Footer() {
 }
 
 function TrailerModal({ close }: { close: () => void }) {
-  const { t } = useApp();
+  const { t, lang } = useApp();
   const ref = useRef<HTMLDialogElement>(null);
   const previousFocus = useRef(document.activeElement as HTMLElement);
   useEffect(() => {
@@ -1371,7 +1371,7 @@ function TrailerModal({ close }: { close: () => void }) {
         >
           <X />
         </button>
-        {programmeTrailer && <FilmVideo src={programmeTrailer} poster={assetUrl("/images/campaign-still.jpg")} title={t(bi("Bande-annonce du programme", "Programme trailer"))} autoPlay />}
+        <FilmVideo key={lang} src={programmeTrailers[lang]} poster={assetUrl("/images/campaign-still.jpg")} title={t(bi("Bande-annonce du programme", "Programme trailer"))} autoPlay />
       </div>
     </dialog>
   );

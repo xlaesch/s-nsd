@@ -2,7 +2,7 @@ import { assetUrl } from "./paths";
 import { projectFrance } from "./geography";
 export type Lang = "fr" | "en";
 export type Bilingual = { fr: string; en: string };
-const videoUrl = (filename: string) => `${assetUrl(`/videos/${filename}`)}?v=20261012-full-res`;
+const videoUrl = (filename: string, version = "20261012-full-res") => `${assetUrl(`/videos/${filename}`)}?v=${version}`;
 export const bi = (fr: string, en: string): Bilingual => ({ fr, en });
 export const anthology = bi(
   "Sommes-nous seules dans l’univers ?",
@@ -233,4 +233,7 @@ export const resources = [
   },
 ];
 
-export const programmeTrailer = videoUrl("programme-trailer.mp4");
+export const programmeTrailers = bi(
+  videoUrl("programme-trailer-vf.mp4", "20261022-v4"),
+  videoUrl("programme-trailer-veng.mp4", "20261022-v4"),
+);

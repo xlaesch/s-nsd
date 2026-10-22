@@ -57,7 +57,7 @@ try {
     if (video?.error) throw new Error("Programme trailer failed to load");
     return video?.readyState >= 1;
   });
-  assert.match(await programmeVideo.locator("source").getAttribute("src"), /programme-trailer\.mp4(?:\?|$)/);
+  assert.match(await programmeVideo.locator("source").getAttribute("src"), /programme-trailer-vf\.mp4(?:\?|$)/);
   assert.ok(await programmeVideo.evaluate((video) => video.duration > 60 && video.videoWidth > 0));
   await page.locator("header .brand").focus();
   assert.equal(
@@ -77,6 +77,11 @@ try {
   await page.getByRole("button", { name: "EN", exact: true }).click();
   assert.equal(await page.locator("html").getAttribute("lang"), "en");
   assert.match(await page.locator("h1").innerText(), /Musicals!/i);
+  await page.getByRole("button", { name: "Watch the trailer", exact: true }).click();
+  await page.waitForFunction(() => document.querySelector("dialog video")?.readyState >= 1);
+  assert.match(await page.locator("dialog video source").getAttribute("src"), /programme-trailer-veng\.mp4(?:\?|$)/);
+  await page.keyboard.press("Escape");
+  await page.getByRole("dialog").waitFor({ state: "detached" });
   await page.goto(base + "/programme");
   assert.match(await page.locator(".page-title > p").innerText(), /Six short films, six songs, zero good reasons not to go\.[\s\S]*song stuck in your head\./);
   assert.equal(await page.locator("header .home-brand").innerText(), "Are we alone in the universe?");
